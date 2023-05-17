@@ -1,6 +1,8 @@
-﻿using FindMyFamilyDoc.API.Interfaces;
+﻿using FindMyFamilyDoc.API.Authentication;
+using FindMyFamilyDoc.API.Interfaces;
 using FindMyFamilyDoc.API.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,12 +13,14 @@ namespace FindMyFamilyDoc.API.Controllers
     public class AccountController : BaseController
     {
         private readonly IAccountService _accountService;
+        
         public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
         }
 
         [HttpPost("register")]
+        [ServiceFilter(typeof(ApiKeyAuthFilter))]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             var result = await _accountService.CreateUserAsync(model);
@@ -33,6 +37,7 @@ namespace FindMyFamilyDoc.API.Controllers
         }
 
         [HttpPut("ConfirmEmail")]
+        [ServiceFilter(typeof(ApiKeyAuthFilter))]
         public async Task<IActionResult> ConfirmEmail(UserAccountConfirmationViewModel model)
         {
             if (model.UserId == null || model.Token == null)
@@ -61,13 +66,14 @@ namespace FindMyFamilyDoc.API.Controllers
         }
 
         [HttpPost("login")]
+        [ServiceFilter(typeof(ApiKeyAuthFilter))]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             var (signInResult, result) = await _accountService.LoginAsync(model);
 
             if (signInResult.Succeeded)
             {
-                return Ok(new { LoginResult = result });
+                return Success(new { LoginResult = result });
             }
             else if (signInResult.IsLockedOut)
             {
@@ -77,6 +83,23 @@ namespace FindMyFamilyDoc.API.Controllers
             {
                 return Error("Invalid login credentials");
             }
+        }
+
+        [HttpPost("refreshJwtToken")]
+        [ServiceFilter(typeof(ApiKeyAuthFilter))]
+        public async Task<IActionResult> RefreshJwtToken(RefreshTokenViewModel model)
+        {
+            var newToken = await _accountService.RefreshTokenAsync(model);
+
+            if (newToken.IsNullOrEmpty())
+            {
+                return Error("Invalid refresh token.");
+            }
+
+            return Success(new
+            {
+                Token = newToken
+            });
         }
 
     }

@@ -10,7 +10,17 @@ namespace FindMyFamilyDoc.API.ViewModels
         public string LastName { get; set; } = default!;
         public string Email { get; set; } = default!;
         public string Token { get; set; } = default!;
+        public string UserRefreshToken { get; set; } = default!;
     }
+
+    public class RefreshTokenViewModel
+    {
+        public string UserId { get; set; } = default!;
+        public string ExpiredJwtToken { get; set; } = default!;
+        public string RefreshToken { get; set; } = default!;
+    }
+
+    
     public class LoginViewModel
     {
         [Required(ErrorMessage = "Email is required.")]

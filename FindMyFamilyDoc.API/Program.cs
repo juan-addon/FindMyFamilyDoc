@@ -5,16 +5,13 @@ using FindMyFamilyDoc.API.Interfaces;
 using FindMyFamilyDoc.API.Models;
 using FindMyFamilyDoc.API.Services;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-JwtAuthenticationHelper.ConfigureJwtAuthentication(builder.Services, builder.Configuration);
-builder.Services.AddAuthorization();
 
-builder.Services.AddControllers(x => x.Filters.Add<ApiKeyAuthFilter>());
+builder.Services.AddControllers();
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
@@ -23,6 +20,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IUserRefreshTokenService, UserRefreshTokenService>();
+builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<DatabaseContext>()
@@ -36,6 +35,10 @@ builder.Services.Configure<IdentityOptions>(opts =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+JwtAuthenticationHelper.ConfigureJwtAuthentication(builder.Services, builder.Configuration);
+builder.Services.AddAuthorization();
+
 
 var app = builder.Build();
 

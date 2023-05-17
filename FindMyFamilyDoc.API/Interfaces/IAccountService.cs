@@ -10,5 +10,6 @@ namespace FindMyFamilyDoc.API.Interfaces
         Task<(SignInResult, LoginResultViewModel?)> LoginAsync(LoginViewModel model);
         Task LogoutAsync(ClaimsPrincipal currentUser);
         Task<IdentityResult> ConfirmEmailAsync(UserAccountConfirmationViewModel model);
+        Task<string?> RefreshTokenAsync(RefreshTokenViewModel model);
     }
 }

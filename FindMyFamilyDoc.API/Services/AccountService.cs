@@ -17,14 +17,18 @@ namespace FindMyFamilyDoc.API.Services
         private readonly DatabaseContext _dbContext;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly IUserRefreshTokenService _userRefreshTokenService;
 
-        public AccountService(UserManager<User> userManager, SignInManager<User> signInManager, DatabaseContext dbContext, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AccountService(UserManager<User> userManager, SignInManager<User> signInManager, 
+            DatabaseContext dbContext, RoleManager<IdentityRole> roleManager, 
+            IConfiguration configuration, IUserRefreshTokenService userRefreshTokenService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _dbContext = dbContext;
             _roleManager = roleManager;
             _configuration = configuration;
+            _userRefreshTokenService = userRefreshTokenService;
         }
 
         public async Task<IdentityResult> CreateUserAsync(RegisterViewModel model)
@@ -79,12 +83,37 @@ namespace FindMyFamilyDoc.API.Services
             return result;
         }
 
+        public async Task<IdentityResult> ConfirmEmailAsync(UserAccountConfirmationViewModel model)
+        {
+            var decodedUserId = HttpUtility.UrlDecode(model.UserId);
+            //var decodedToken = HttpUtility.UrlDecode(token);
+
+            var user = await _userManager.FindByIdAsync(decodedUserId);
+            if (user == null)
+            {
+                throw new ArgumentException($"Unable to load user with ID '{model.UserId}'.");
+            }
+
+            if (user.EmailConfirmed)
+            {
+                throw new InvalidOperationException("Account is already confirmed.");
+            }
+
+            return await _userManager.ConfirmEmailAsync(user, model.Token);
+        }
+
         public async Task<(SignInResult, LoginResultViewModel?)> LoginAsync(LoginViewModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 return (SignInResult.Failed, null);
+            }
+
+            // Check if the user has confirmed their email
+            if (!user.EmailConfirmed)
+            {
+                return (SignInResult.NotAllowed, null);
             }
 
             // Check if the user is locked out
@@ -99,11 +128,13 @@ namespace FindMyFamilyDoc.API.Services
 
             if (role == null)
             {
-                throw new InvalidOperationException("User does not have a role assigned.");
+                //throw new InvalidOperationException("User does not have a role assigned.");
+                return (SignInResult.NotAllowed, null);
             }
 
             // Generate JWT token
             var token = JwtAuthenticationHelper.GenerateJwtToken(user, role, _configuration);
+            var userRefreshToken = await _userRefreshTokenService.CreateRefreshTokenAsync(user.Id);
 
             return (result, new LoginResultViewModel
             {
@@ -111,7 +142,8 @@ namespace FindMyFamilyDoc.API.Services
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email!,
-                Token = token.ToString()
+                Token = token,
+                UserRefreshToken = userRefreshToken,
             });
         }
 
@@ -133,25 +165,36 @@ namespace FindMyFamilyDoc.API.Services
             await _signInManager.SignOutAsync();
         }
 
-        public async Task<IdentityResult> ConfirmEmailAsync(UserAccountConfirmationViewModel model)
+        public async Task<string?> RefreshTokenAsync(RefreshTokenViewModel model)
         {
-            var decodedUserId = HttpUtility.UrlDecode(model.UserId);
-            //var decodedToken = HttpUtility.UrlDecode(token);
+            var isValidRefreshToken = await _userRefreshTokenService.ValidateRefreshTokenAsync(model.UserId, model.RefreshToken);
+            if (!isValidRefreshToken)
+            {
+                return null;
+            }
 
-            var user = await _userManager.FindByIdAsync(decodedUserId);
+            // Find the user
+            var user = await _userManager.FindByIdAsync(model.UserId);
             if (user == null)
             {
-                throw new ArgumentException($"Unable to load user with ID '{model.UserId}'.");
+                // Handle the case where the user was not found
+                return null;
             }
 
-            if (user.EmailConfirmed)
+            // Get the user's roles
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles == null || roles.Count == 0)
             {
-                throw new InvalidOperationException("Account is already confirmed.");
+                // Handle the case where the user has no roles
+                return null;
             }
 
-            return await _userManager.ConfirmEmailAsync(user, model.Token);
-        }
+            // Generate a new JWT token
+            var role = roles.FirstOrDefault();
+            var newToken = JwtAuthenticationHelper.GenerateJwtToken(user, role!, _configuration);
 
+            return newToken;
+        }
 
         private async Task SendEmailConfirmationAsync(string email, string userId, string emailConfirmationToken)
         {

@@ -13,6 +13,7 @@ namespace FindMyFamilyDoc.API
         {
         }
 
+        public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

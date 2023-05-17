@@ -9,15 +9,19 @@ namespace FindMyFamilyDoc.API.Helpers
 {
     public static class JwtAuthenticationHelper
     {
-        public static void ConfigureJwtAuthentication(IServiceCollection services, IConfiguration Configuration)
+        public static void ConfigureJwtAuthentication(IServiceCollection services, IConfiguration configuration)
         {
-            var key = Configuration.GetValue<string>("JwtSettings:Key");
+            var jwtSettings = configuration.GetSection("JwtSettings");
+            var key = jwtSettings.GetValue<string>("Secret");
+            var issuer = jwtSettings.GetValue<string>("ValidIssuer");
+            var audience = jwtSettings.GetValue<string>("ValidAudience");
             var jwtKey = Encoding.ASCII.GetBytes(key!);
 
             services.AddAuthentication(config =>
             {
                 config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                config.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(config =>
             {
                 config.RequireHttpsMetadata = false;
@@ -28,6 +32,8 @@ namespace FindMyFamilyDoc.API.Helpers
                     IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
                     ValidateIssuer = false,
                     ValidateAudience = false,
+                    //ValidAudience = audience, // set to true and add the values for prod only
+                    //ValidIssuer = issuer, //// set to true and add the values for prod only
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
@@ -37,10 +43,10 @@ namespace FindMyFamilyDoc.API.Helpers
         public static string GenerateJwtToken(User user, string role, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings.GetValue<string>("Key");
-            var issuer = jwtSettings.GetValue<string>("Issuer");
-            var audience = jwtSettings.GetValue<string>("Audience");
-            var expirationInMinutes = jwtSettings.GetValue<int>("ExpirationInMinutes");
+            var secretKey = jwtSettings.GetValue<string>("Secret");
+            var issuer = jwtSettings.GetValue<string>("ValidIssuer");
+            var audience = jwtSettings.GetValue<string>("ValidAudience");
+            var expirationInMinutes = jwtSettings.GetValue<int>("TokenExpiryTimeInHour");
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey!);
@@ -53,9 +59,9 @@ namespace FindMyFamilyDoc.API.Helpers
                     new Claim(ClaimTypes.Email, user.Email!),
                     new Claim(ClaimTypes.Role, role)
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(expirationInMinutes),
-                Issuer = issuer,
-                Audience = audience,
+                Expires = DateTime.UtcNow.AddMinutes(1),// change me later
+                //Issuer = issuer,
+                //Audience = audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
