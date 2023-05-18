@@ -49,9 +49,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseHttpsRedirection();
 
-//app.UseMiddleware<ApiKeyAuthMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
