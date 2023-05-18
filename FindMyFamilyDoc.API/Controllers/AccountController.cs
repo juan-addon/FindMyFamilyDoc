@@ -3,6 +3,7 @@ using FindMyFamilyDoc.Business.Interfaces;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,7 +28,7 @@ namespace FindMyFamilyDoc.API.Controllers
 
             if (result.Succeeded)
             {
-                return Success(new { result });
+                return Success(new { Message = result.Succeeded });
             }
             else
             {
@@ -62,7 +63,7 @@ namespace FindMyFamilyDoc.API.Controllers
                 return Error(ex.Message);
             }
 
-            return Success("Email confirmed successfully.");
+            return Success( new { Message = "Email confirmed successfully." });
         }
 
         [HttpPost("login")]
@@ -77,13 +78,41 @@ namespace FindMyFamilyDoc.API.Controllers
             }
             else if (signInResult.IsLockedOut)
             {
-                return StatusCode(423, "Account is locked out");
+                return Error("Account is locked out");
             }
             else
             {
                 return Error("Invalid login credentials");
             }
         }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Error("User is not authenticated");
+            }
+
+            try
+            {
+                await _accountService.LogoutAsync(userId);
+            }
+            catch (ArgumentNullException)
+            {
+                // Log exception
+                return Error("User Id is missing.");
+            }
+            catch (ArgumentException)
+            {
+                // Log exception
+                return Error("User not found.");
+            }
+
+            return Success( new {Message = "Success" });
+        }
+
 
         [HttpPost("refreshJwtToken")]
         [ServiceFilter(typeof(ApiKeyAuthFilter))]

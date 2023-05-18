@@ -6,30 +6,31 @@ namespace FindMyFamilyDoc.API.Controllers
 {
     public class BaseController : ControllerBase
     {
-        protected IActionResult Success<T>(T data)
+        protected IActionResult Success<T>(T data) where T : class
         {
-            return Ok(new ApiResponse<T>(true, data, null!));
+            return Ok(ApiResponse<T>.SuccessResponse(data));
         }
 
         protected IActionResult Error(IEnumerable<string> errors)
         {
-            return BadRequest(new ApiResponse<object>(false, null!, errors));
+            return BadRequest(ApiResponse<object>.ErrorResponse(errors));
         }
 
         protected IActionResult Error(string error)
         {
-            return BadRequest(new ApiResponse<object>(false, null!, new List<string> { error }));
+            return BadRequest(ApiResponse<object>.ErrorResponse(error));
         }
 
         protected IActionResult Error(IEnumerable<IdentityError> errors)
         {
             var errorMessages = errors.Select(e => e.Description).ToList();
-            return BadRequest(new ApiResponse<object>(false, null!, errorMessages));
+            return BadRequest(ApiResponse<object>.ErrorResponse(errorMessages));
         }
 
         protected IActionResult UnauthorizedError()
         {
-            return Unauthorized(new ApiResponse<object>(false, null!, new List<string> { "Unauthorized" }));
+            return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized" }));
         }
     }
+
 }

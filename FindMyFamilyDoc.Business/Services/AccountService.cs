@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using System.Security.Claims;
 using System.Web;
 
 namespace FindMyFamilyDoc.Business.Services
@@ -148,12 +147,11 @@ namespace FindMyFamilyDoc.Business.Services
             });
         }
 
-        public async Task LogoutAsync(ClaimsPrincipal currentUser)
+        public async Task LogoutAsync(string userId)
         {
-            var userId = currentUser.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new ArgumentNullException("User Id not found in current user's claims.");
+                throw new ArgumentNullException("User Id is missing.");
             }
 
             var user = await _userManager.FindByIdAsync(userId);
@@ -164,6 +162,7 @@ namespace FindMyFamilyDoc.Business.Services
 
             await _userManager.UpdateSecurityStampAsync(user);
             await _signInManager.SignOutAsync();
+            await _userRefreshTokenService.InvalidateRefreshTokenAsync(user.Id);
         }
 
         public async Task<string?> RefreshTokenAsync(RefreshTokenViewModel model)

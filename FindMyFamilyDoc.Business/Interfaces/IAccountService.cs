@@ -8,8 +8,8 @@ namespace FindMyFamilyDoc.Business.Interfaces
     {
         Task<IdentityResult> CreateUserAsync(RegisterViewModel user);
         Task<(SignInResult, LoginResultViewModel?)> LoginAsync(LoginViewModel model);
-        Task LogoutAsync(ClaimsPrincipal currentUser);
         Task<IdentityResult> ConfirmEmailAsync(UserAccountConfirmationViewModel model);
         Task<string?> RefreshTokenAsync(RefreshTokenViewModel model);
+        Task LogoutAsync(string userId);
     }
 }
