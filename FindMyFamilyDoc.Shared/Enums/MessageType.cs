@@ -1,4 +1,4 @@
-﻿namespace FindMyFamilyDoc.API.Enums
+﻿namespace FindMyFamilyDoc.Shared.Enums
 {
     public enum MessageType
     {

@@ -1,10 +1,10 @@
-﻿using FindMyFamilyDoc.API.Enums;
-using FindMyFamilyDoc.API.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using FindMyFamilyDoc.Shared.Enums;
+using FindMyFamilyDoc.Shared.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace FindMyFamilyDoc.API
+namespace FindMyFamilyDoc.Business
 {
     public class DatabaseContext : IdentityDbContext<User>
     {

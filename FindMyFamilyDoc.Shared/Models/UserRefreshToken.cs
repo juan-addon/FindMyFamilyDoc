@@ -1,4 +1,4 @@
-﻿namespace FindMyFamilyDoc.API.Models
+﻿namespace FindMyFamilyDoc.Shared.Models
 {
     public class UserRefreshToken
     {

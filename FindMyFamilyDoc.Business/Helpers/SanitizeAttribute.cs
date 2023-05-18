@@ -1,7 +1,7 @@
 ﻿using Ganss.Xss;
 using System.ComponentModel.DataAnnotations;
 
-namespace FindMyFamilyDoc.API.Helpers
+namespace FindMyFamilyDoc.Business.Helpers
 {
     public class SanitizeAttribute : ValidationAttribute
     {

@@ -1,10 +1,14 @@
-﻿using FindMyFamilyDoc.API.Interfaces;
-using FindMyFamilyDoc.API.Models;
+﻿using FindMyFamilyDoc.Business.Interfaces;
+using FindMyFamilyDoc.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace FindMyFamilyDoc.API.Services
+namespace FindMyFamilyDoc.Business.Services
 {
-
     public class UserRefreshTokenService : IUserRefreshTokenService
     {
         private readonly DatabaseContext _context;
@@ -24,7 +28,7 @@ namespace FindMyFamilyDoc.API.Services
             {
                 UserId = userId,
                 Token = refreshToken,
-                ExpiryDate = DateTime.UtcNow.AddHours(12) 
+                ExpiryDate = DateTime.UtcNow.AddHours(12)
             };
 
             _context.UserRefreshTokens.Add(refreshTokenEntry);

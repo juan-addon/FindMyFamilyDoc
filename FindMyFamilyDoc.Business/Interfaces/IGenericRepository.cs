@@ -1,7 +1,7 @@
-﻿using FindMyFamilyDoc.API.Models;
+﻿using FindMyFamilyDoc.Shared.Models;
 using System.Linq.Expressions;
 
-namespace FindMyFamilyDoc.API.Interfaces
+namespace FindMyFamilyDoc.Business.Interfaces
 {
     public interface IGenericRepository<T> where T : BaseEntity
     {

@@ -1,9 +1,9 @@
-using FindMyFamilyDoc.API;
 using FindMyFamilyDoc.API.Authentication;
-using FindMyFamilyDoc.API.Helpers;
-using FindMyFamilyDoc.API.Interfaces;
-using FindMyFamilyDoc.API.Models;
-using FindMyFamilyDoc.API.Services;
+using FindMyFamilyDoc.Business;
+using FindMyFamilyDoc.Business.Helpers;
+using FindMyFamilyDoc.Business.Interfaces;
+using FindMyFamilyDoc.Business.Services;
+using FindMyFamilyDoc.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

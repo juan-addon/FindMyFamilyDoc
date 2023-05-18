@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FindMyFamilyDoc.API.Models
+namespace FindMyFamilyDoc.Shared.Models
 {
     public class BaseEntity
     {

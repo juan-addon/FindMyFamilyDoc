@@ -1,4 +1,4 @@
-﻿namespace FindMyFamilyDoc.API.Helpers
+﻿namespace FindMyFamilyDoc.Business.Helpers
 {
     public class ApiResponse<T>
     {

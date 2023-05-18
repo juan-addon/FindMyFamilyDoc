@@ -1,11 +1,13 @@
-﻿using FindMyFamilyDoc.API.Models;
+﻿using FindMyFamilyDoc.Shared.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace FindMyFamilyDoc.API.Helpers
+namespace FindMyFamilyDoc.Business.Helpers
 {
     public static class JwtAuthenticationHelper
     {
@@ -44,9 +46,9 @@ namespace FindMyFamilyDoc.API.Helpers
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
             var secretKey = jwtSettings.GetValue<string>("Secret");
-            var issuer = jwtSettings.GetValue<string>("ValidIssuer");
-            var audience = jwtSettings.GetValue<string>("ValidAudience");
-            var expirationInMinutes = jwtSettings.GetValue<int>("TokenExpiryTimeInHour");
+            var issuer = jwtSettings.GetValue<string>("ValidIssuer"); // use me later
+            var audience = jwtSettings.GetValue<string>("ValidAudience"); // use me later
+            var expirationInMinutes = jwtSettings.GetValue<int>("TokenExpiryTimeInHour");// use me later
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey!);

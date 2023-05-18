@@ -5,6 +5,10 @@ VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindMyFamilyDoc.API", "FindMyFamilyDoc.API\FindMyFamilyDoc.API.csproj", "{BC1F124A-25BD-490C-980B-D55AE65B1ADD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindMyFamilyDoc.Business", "FindMyFamilyDoc.Business\FindMyFamilyDoc.Business.csproj", "{3C554D74-501D-4E38-BFA5-192BBCD072DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindMyFamilyDoc.Shared", "FindMyFamilyDoc.Shared\FindMyFamilyDoc.Shared.csproj", "{D9A5DD4D-7994-4D77-97F5-0F4DFE7DA449}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{BC1F124A-25BD-490C-980B-D55AE65B1ADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC1F124A-25BD-490C-980B-D55AE65B1ADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC1F124A-25BD-490C-980B-D55AE65B1ADD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C554D74-501D-4E38-BFA5-192BBCD072DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C554D74-501D-4E38-BFA5-192BBCD072DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C554D74-501D-4E38-BFA5-192BBCD072DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C554D74-501D-4E38-BFA5-192BBCD072DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9A5DD4D-7994-4D77-97F5-0F4DFE7DA449}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9A5DD4D-7994-4D77-97F5-0F4DFE7DA449}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9A5DD4D-7994-4D77-97F5-0F4DFE7DA449}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9A5DD4D-7994-4D77-97F5-0F4DFE7DA449}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

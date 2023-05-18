@@ -1,14 +1,15 @@
-﻿using FindMyFamilyDoc.API.Helpers;
-using FindMyFamilyDoc.API.Interfaces;
-using FindMyFamilyDoc.API.Models;
-using FindMyFamilyDoc.API.ViewModels;
+﻿using FindMyFamilyDoc.Business.Helpers;
+using FindMyFamilyDoc.Business.Interfaces;
+using FindMyFamilyDoc.Shared.Models;
+using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Security.Claims;
 using System.Web;
 
-namespace FindMyFamilyDoc.API.Services
+namespace FindMyFamilyDoc.Business.Services
 {
     public class AccountService : IAccountService
     {
@@ -19,8 +20,8 @@ namespace FindMyFamilyDoc.API.Services
         private readonly IConfiguration _configuration;
         private readonly IUserRefreshTokenService _userRefreshTokenService;
 
-        public AccountService(UserManager<User> userManager, SignInManager<User> signInManager, 
-            DatabaseContext dbContext, RoleManager<IdentityRole> roleManager, 
+        public AccountService(UserManager<User> userManager, SignInManager<User> signInManager,
+            DatabaseContext dbContext, RoleManager<IdentityRole> roleManager,
             IConfiguration configuration, IUserRefreshTokenService userRefreshTokenService)
         {
             _userManager = userManager;
@@ -71,8 +72,8 @@ namespace FindMyFamilyDoc.API.Services
                 }
                 else
                 {
-                   await transaction.RollbackAsync();
-                   result = IdentityResult.Failed(new IdentityError { Description = "Role does not exist." });
+                    await transaction.RollbackAsync();
+                    result = IdentityResult.Failed(new IdentityError { Description = "Role does not exist." });
                 }
             }
             else
@@ -192,7 +193,6 @@ namespace FindMyFamilyDoc.API.Services
             // Generate a new JWT token
             var role = roles.FirstOrDefault();
             var newToken = JwtAuthenticationHelper.GenerateJwtToken(user, role!, _configuration);
-
             return newToken;
         }
 

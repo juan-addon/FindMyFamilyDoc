@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace FindMyFamilyDoc.API.Models
+namespace FindMyFamilyDoc.Shared.Models
 {
     public class User : IdentityUser
     {

@@ -1,6 +1,6 @@
 ﻿using FindMyFamilyDoc.API.Authentication;
-using FindMyFamilyDoc.API.Interfaces;
-using FindMyFamilyDoc.API.ViewModels;
+using FindMyFamilyDoc.Business.Interfaces;
+using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace FindMyFamilyDoc.API.Enums
+namespace FindMyFamilyDoc.Shared.Enums
 {
     public enum UserRoles
     {

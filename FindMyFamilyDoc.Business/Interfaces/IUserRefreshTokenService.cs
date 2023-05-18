@@ -1,4 +1,5 @@
-﻿namespace FindMyFamilyDoc.API.Interfaces
+﻿
+namespace FindMyFamilyDoc.Business.Interfaces
 {
     public interface IUserRefreshTokenService
     {

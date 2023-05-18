@@ -1,8 +1,8 @@
-﻿using FindMyFamilyDoc.API.ViewModels;
+﻿using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace FindMyFamilyDoc.API.Interfaces
+namespace FindMyFamilyDoc.Business.Interfaces
 {
     public interface IAccountService
     {

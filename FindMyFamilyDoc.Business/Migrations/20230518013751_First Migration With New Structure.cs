@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace FindMyFamilyDoc.API.Migrations
+namespace FindMyFamilyDoc.Business.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class FirstMigrationWithNewStructure : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -160,15 +160,36 @@ namespace FindMyFamilyDoc.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserRefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserRefreshTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "32465078-3967-4158-a072-7c5b22c5cae7", null, "Admin", "ADMIN" },
-                    { "6fa675e1-c142-4cdd-a195-31dedb3c46a9", null, "AdministractiveAssistant", "ADMINISTRACTIVEASSISTANT" },
-                    { "8d2a49e0-fd50-4195-b194-6b21473f4d24", null, "Patience", "PATIENCE" },
-                    { "b3746db7-cd67-4e33-b688-147b70c88782", null, "Doctor", "DOCTOR" }
+                    { "6bce8319-b570-4734-9479-34add612a294", null, "AdministractiveAssistant", "ADMINISTRACTIVEASSISTANT" },
+                    { "7cbe88c2-f558-4f09-9bc8-4e870d3e9d07", null, "Doctor", "DOCTOR" },
+                    { "90bbbb02-097b-42a8-bec4-adedc41f420d", null, "Admin", "ADMIN" },
+                    { "e51037fc-4ac9-4175-b35f-84243cbe711b", null, "Patience", "PATIENCE" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -209,6 +230,11 @@ namespace FindMyFamilyDoc.API.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRefreshTokens_UserId",
+                table: "UserRefreshTokens",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -228,6 +254,9 @@ namespace FindMyFamilyDoc.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "UserRefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

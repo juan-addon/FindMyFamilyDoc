@@ -1,7 +1,6 @@
-﻿using FindMyFamilyDoc.API.Helpers;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace FindMyFamilyDoc.API.ViewModels
+namespace FindMyFamilyDoc.Shared.ViewModels
 {
     public class LoginResultViewModel
     {
@@ -20,15 +19,13 @@ namespace FindMyFamilyDoc.API.ViewModels
         public string RefreshToken { get; set; } = default!;
     }
 
-    
+
     public class LoginViewModel
     {
         [Required(ErrorMessage = "Email is required.")]
-        [Sanitize]
         public string Email { get; set; } = default!;
 
         [Required(ErrorMessage = "Password is required.")]
-        [Sanitize]
         public string Password { get; set; } = default!;
     }
 
@@ -36,22 +33,18 @@ namespace FindMyFamilyDoc.API.ViewModels
     {
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email address.")]
-        [Sanitize]
         public string Email { get; set; } = default!;
 
         [Required(ErrorMessage = "Password is required.")]
         [StringLength(100, ErrorMessage = "The password must be at least {2} characters long.", MinimumLength = 8)]
-        [Sanitize]
         public string Password { get; set; } = default!;
 
         [Required(ErrorMessage = "First name is required.")]
         [StringLength(50, ErrorMessage = "The first name must be between {2} and {1} characters long.", MinimumLength = 2)]
-        [Sanitize]
         public string FirstName { get; set; } = default!;
 
         [Required(ErrorMessage = "Last name is required.")]
         [StringLength(50, ErrorMessage = "The last name must be between {2} and {1} characters long.", MinimumLength = 2)]
-        [Sanitize]
         public string LastName { get; set; } = default!;
 
         [Required(ErrorMessage = "At least one role must be selected.")]
@@ -66,7 +59,7 @@ namespace FindMyFamilyDoc.API.ViewModels
         public string? OldPassword { get; set; }
     }
 
-    public class UserAccountConfirmationViewModel 
+    public class UserAccountConfirmationViewModel
     {
         public string UserId { get; set; } = default!;
         public string Token { get; set; } = default!;
