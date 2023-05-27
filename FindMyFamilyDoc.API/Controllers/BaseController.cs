@@ -1,35 +1,57 @@
 ﻿using FindMyFamilyDoc.Business.Helpers;
-using Microsoft.AspNetCore.Identity;
+using FindMyFamilyDoc.Shared.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace FindMyFamilyDoc.API.Controllers
 {
-    public class BaseController : ControllerBase
+    [ApiController]
+    public abstract class BaseController : ControllerBase
     {
-        protected IActionResult Success<T>(T data) where T : class
+        protected Result<T> Success<T>(T data)
         {
-            return Ok(ApiResponse<T>.SuccessResponse(data));
+            return new Result<T>(data);
         }
 
-        protected IActionResult Error(IEnumerable<string> errors)
+		protected Result<T> Error<T>(ApiErrorCode errorCode, ModelStateDictionary modelState = null)
+		{
+			IDictionary<string, string[]> errors = null!;
+			if (modelState != null && !modelState.IsValid)
+			{
+				errors = modelState
+					.Where(m => m.Value!.Errors.Count > 0)
+					.ToDictionary(
+						kvp => kvp.Key,
+						kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray()
+					);
+			}
+			return new Result<T>(errorCode.ToString(), errors!);
+		}
+
+		protected Result<T> Error<T>(ApiErrorCode errorCode, IEnumerable<string> errorList)
         {
-            return BadRequest(ApiResponse<object>.ErrorResponse(errors));
+            var errors = new Dictionary<string, string[]>
+            {
+                { "errors", errorList.ToArray() }
+            };
+            return new Result<T>(errorCode.ToString(), errors);
         }
 
-        protected IActionResult Error(string error)
-        {
-            return BadRequest(ApiResponse<object>.ErrorResponse(error));
-        }
+		protected Result<T> Error<T>(ApiErrorCode errorCode, string error)
+		{
+			var errors = new Dictionary<string, string[]>
+			{
+				{ "errors", new string[] { error } }
+			};
+			return new Result<T>(errorCode.ToString(), errors);
+		}
 
-        protected IActionResult Error(IEnumerable<IdentityError> errors)
+		protected IActionResult Result<T>(Result<T> result)
         {
-            var errorMessages = errors.Select(e => e.Description).ToList();
-            return BadRequest(ApiResponse<object>.ErrorResponse(errorMessages));
-        }
+            if (result.Success)
+                return Ok(result);
 
-        protected IActionResult UnauthorizedError()
-        {
-            return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized" }));
+            return BadRequest(result); // Or return different HTTP status code based on ErrorCode
         }
     }
 

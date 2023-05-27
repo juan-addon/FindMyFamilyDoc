@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FindMyFamilyDoc.Shared.Enums;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -13,7 +14,16 @@ namespace FindMyFamilyDoc.Business.Helpers
             Next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+		protected Result<T> Error<T>(ApiErrorCode errorCode, string errorMessage)
+		{
+			var errors = new Dictionary<string, string[]>
+			{
+				{ "errors", new string[] { errorMessage } }
+			};
+			return new Result<T>(errorCode.ToString(), errors);
+		}
+
+		public async Task Invoke(HttpContext context)
         {
             try
             {
@@ -21,21 +31,17 @@ namespace FindMyFamilyDoc.Business.Helpers
             }
             catch (Exception ex)
             {
-                context.Response.ContentType = "application/problem+json";
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+				context.Response.ContentType = "application/problem+json";
+				context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-                var problemDetail = new ProblemDetails()
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Detail = ex.Message,
-                    Instance = "",
-                    Title = "Internal Server Error - Something went wrong",
-                    Type = "Error"
-                };
+				var errorResult = Error<ProblemDetails>(
+					ApiErrorCode.InternalServerError,
+					"Internal Server Error - Something went wrong"
+				);
 
-                var problemDetailJson = JsonSerializer.Serialize(problemDetail);
-                await context.Response.WriteAsync(problemDetailJson);
-            }
+				var problemDetailJson = JsonSerializer.Serialize(errorResult);
+				await context.Response.WriteAsync(problemDetailJson);
+			}
         }
     }
 }

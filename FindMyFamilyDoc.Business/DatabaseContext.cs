@@ -3,6 +3,7 @@ using FindMyFamilyDoc.Shared.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using FindMyFamilyDoc.Business.Helpers;
 
 namespace FindMyFamilyDoc.Business
 {
@@ -14,6 +15,9 @@ namespace FindMyFamilyDoc.Business
         }
 
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
+        public DbSet<State> States { get; set; }
+        public DbSet<City> Cities { get; set; }
+        public DbSet<Specialty> Specialties { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +30,7 @@ namespace FindMyFamilyDoc.Business
             }).ToArray();
 
             modelBuilder.Entity<IdentityRole>().HasData(roles);
+            ModelBuilderStateDataSeeder.Seed(modelBuilder);
         }
     }
 }

@@ -8,7 +8,8 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
         public string Email { get; set; } = default!;
-        public string Token { get; set; } = default!;
+		public string Role { get; set; } = default!;
+		public string Token { get; set; } = default!;
         public string UserRefreshToken { get; set; } = default!;
     }
 
@@ -19,7 +20,6 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string RefreshToken { get; set; } = default!;
     }
 
-
     public class LoginViewModel
     {
         [Required(ErrorMessage = "Email is required.")]
@@ -29,7 +29,12 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string Password { get; set; } = default!;
     }
 
-    public class RegisterViewModel
+	public class LogoutViewModel
+	{
+		public string UserId { get; set; } = default!;
+	}
+
+	public class RegisterViewModel
     {
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email address.")]
@@ -78,4 +83,22 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         [Compare(nameof(NewPassword), ErrorMessage = "New password and confirmation password do not match.")]
         public string? ConfirmPassword { get; set; }
     }
+
+	public class ForgotPasswordViewModel
+	{
+        [Required]
+		[EmailAddress(ErrorMessage = "Invalid email address.")]
+		public string Email { get; set; } = default!;
+	}
+
+	public class ResetPasswordViewModel
+	{
+		[Required]
+		public string UserId { get; set; } = default!;
+		[Required]
+		public string Token { get; set; } = default!;
+		[Required]
+		public string NewPassword { get; set; } = default!;
+	}
+
 }

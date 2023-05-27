@@ -1,5 +1,6 @@
 ﻿using FindMyFamilyDoc.Business.Helpers;
 using FindMyFamilyDoc.Business.Interfaces;
+using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -83,26 +84,41 @@ namespace FindMyFamilyDoc.Business.Services
             return result;
         }
 
-        public async Task<IdentityResult> ConfirmEmailAsync(UserAccountConfirmationViewModel model)
-        {
-            var decodedUserId = HttpUtility.UrlDecode(model.UserId);
-            //var decodedToken = HttpUtility.UrlDecode(token);
+		public async Task<Result<IdentityResult>> ConfirmEmailAsync(UserAccountConfirmationViewModel model)
+		{
+			try
+			{
+				var decodedUserId = HttpUtility.UrlDecode(model.UserId);
 
-            var user = await _userManager.FindByIdAsync(decodedUserId);
-            if (user == null)
-            {
-                throw new ArgumentException($"Unable to load user with ID '{model.UserId}'.");
-            }
+				var user = await _userManager.FindByIdAsync(decodedUserId);
+				if (user == null)
+				{
+					return new Result<IdentityResult>(ApiErrorCode.UserNotFound.ToString(), $"Unable to load user with ID '{model.UserId}'.");
+				}
 
-            if (user.EmailConfirmed)
-            {
-                throw new InvalidOperationException("Account is already confirmed.");
-            }
+				if (user.EmailConfirmed)
+				{
+					return new Result<IdentityResult>(ApiErrorCode.RequestError.ToString(), "Account is already confirmed.");
+				}
 
-            return await _userManager.ConfirmEmailAsync(user, model.Token);
-        }
+				var result = await _userManager.ConfirmEmailAsync(user, model.Token);
 
-        public async Task<(SignInResult, LoginResultViewModel?)> LoginAsync(LoginViewModel model)
+				if (!result.Succeeded)
+				{
+					return new Result<IdentityResult>(ApiErrorCode.TokenInvalid.ToString(), "Failed to confirm user account.");
+				}
+
+
+				return new Result<IdentityResult>(result);
+			}
+			catch (Exception ex)
+			{
+				return new Result<IdentityResult>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+			}
+		}
+
+
+		public async Task<(SignInResult, LoginResultViewModel?)> LoginAsync(LoginViewModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
@@ -143,59 +159,152 @@ namespace FindMyFamilyDoc.Business.Services
                 LastName = user.LastName,
                 Email = user.Email!,
                 Token = token,
-                UserRefreshToken = userRefreshToken,
+                Role = role,
+				UserRefreshToken = userRefreshToken,
             });
         }
 
-        public async Task LogoutAsync(string userId)
-        {
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new ArgumentNullException("User Id is missing.");
-            }
+		public async Task<Result<User>> LogoutAsync(string userId)
+		{
+			try
+			{
+				if (string.IsNullOrEmpty(userId))
+			    {
+				    return new Result<User>(ApiErrorCode.ValidationError.ToString(), "User Id is missing.");
+			    }
 
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new ArgumentException($"No user found with Id {userId}.");
-            }
+			    var user = await _userManager.FindByIdAsync(userId);
+			    if (user == null)
+			    {
+				    return new Result<User>(ApiErrorCode.UserNotFound.ToString(), $"No user found with Id {userId}.");
+			    }
 
-            await _userManager.UpdateSecurityStampAsync(user);
-            await _signInManager.SignOutAsync();
-            await _userRefreshTokenService.InvalidateRefreshTokenAsync(user.Id);
-        }
+			    await _userManager.UpdateSecurityStampAsync(user);
+			    await _signInManager.SignOutAsync();
+			    await _userRefreshTokenService.InvalidateRefreshTokenAsync(user.Id);
 
-        public async Task<string?> RefreshTokenAsync(RefreshTokenViewModel model)
-        {
-            var isValidRefreshToken = await _userRefreshTokenService.ValidateRefreshTokenAsync(model.UserId, model.RefreshToken);
-            if (!isValidRefreshToken)
-            {
-                return null;
-            }
+			    return new Result<User>(user);
+			}
+			catch (Exception ex)
+			{
+				return new Result<User>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+			}
+		}
 
-            // Find the user
-            var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user == null)
-            {
-                // Handle the case where the user was not found
-                return null;
-            }
+		public async Task<Result<string>> RefreshTokenAsync(RefreshTokenViewModel model)
+		{
+			var isValidRefreshToken = await _userRefreshTokenService.ValidateRefreshTokenAsync(model.UserId, model.RefreshToken);
+			if (!isValidRefreshToken)
+			{
+				return new Result<string>(ApiErrorCode.ValidationError.ToString(), "Invalid refresh token.");
+			}
 
-            // Get the user's roles
-            var roles = await _userManager.GetRolesAsync(user);
-            if (roles == null || roles.Count == 0)
-            {
-                // Handle the case where the user has no roles
-                return null;
-            }
+			var user = await _userManager.FindByIdAsync(model.UserId);
+			if (user == null)
+			{
+				return new Result<string>(ApiErrorCode.UserNotFound.ToString(), "User not found.");
+			}
 
-            // Generate a new JWT token
-            var role = roles.FirstOrDefault();
-            var newToken = JwtAuthenticationHelper.GenerateJwtToken(user, role!, _configuration);
-            return newToken;
-        }
+			var roles = await _userManager.GetRolesAsync(user);
+			if (roles == null || roles.Count == 0)
+			{
+				return new Result<string>(ApiErrorCode.UserNotFound.ToString(), "User has no roles.");
+			}
 
-        private async Task SendEmailConfirmationAsync(string email, string userId, string emailConfirmationToken)
+			var role = roles.FirstOrDefault();
+			var newToken = JwtAuthenticationHelper.GenerateJwtToken(user, role!, _configuration);
+
+			return new Result<string>(newToken);
+		}
+
+		public async Task<Result<string>> ForgotPasswordAsync(ForgotPasswordViewModel model)
+		{
+			try
+			{
+				var user = await _userManager.FindByEmailAsync(model.Email);
+				if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+				{
+					return new Result<string>(ApiErrorCode.UserNotFound.ToString(), "User not found or not confirmed");
+				}
+				var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+				await SendPasswordResetToken(model.Email, user.Id, code);
+				return new Result<string>("Password reset process initiated successfully. Please check your email for further instructions.");
+			}
+			catch (Exception ex)
+			{
+				return new Result<string>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+			}
+		}
+
+		public async Task<Result<string>> ConfirmResetPasswordTokenAsync(string userId, string token)
+		{
+			try
+			{
+				var user = await _userManager.FindByIdAsync(userId);
+				if (user == null)
+				{
+					return new Result<string>(ApiErrorCode.UserNotFound.ToString(), "User not found");
+				}
+
+				var isValidToken = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword", token);
+				if (!isValidToken)
+				{
+					return new Result<string>(ApiErrorCode.TokenInvalid.ToString(), "Invalid reset password token");
+				}
+
+				return new Result<string>(user.Id);
+			}
+			catch (Exception ex)
+			{
+				return new Result<string>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+			}
+		}
+
+		public async Task<Result<string>> ResetPasswordAsync(ResetPasswordViewModel model)
+		{
+			try
+			{
+				var user = await _userManager.FindByIdAsync(model.UserId);
+				if (user == null)
+				{
+					return new Result<string>(ApiErrorCode.UserNotFound.ToString(), "User not found");
+				}
+
+				var isValidToken = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword", model.Token);
+				if (!isValidToken)
+				{
+					return new Result<string>(ApiErrorCode.TokenInvalid.ToString(), "Invalid reset password token");
+				}
+
+				var resetPasswordResult = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+				if (!resetPasswordResult.Succeeded)
+				{
+					var errors = resetPasswordResult.Errors.Select(error => error.Description);
+					return new Result<string>(ApiErrorCode.RequestError.ToString(), "Password reset failed");
+				}
+
+				return new Result<string>("Password reset successful");
+			}
+			catch (Exception ex)
+			{
+				return new Result<string>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+			}
+		}
+
+
+		private async Task SendPasswordResetToken(string email, string userId, string passwordResetToken)
+		{
+			var client = new SendGridClient("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");
+			var from = new EmailAddress("juan.addon@gmail.com", "Jose Adon");
+			var subject = "Reset your password";
+			var to = new EmailAddress(email);
+			var plainTextContent = $"User Id: {userId} Token: {passwordResetToken}";
+			var htmlContent = $"<strong> User Id: {userId}</strong> Token: {passwordResetToken}";
+			var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+			await client.SendEmailAsync(msg);
+		}
+
+		private async Task SendEmailConfirmationAsync(string email, string userId, string emailConfirmationToken)
         {
             var client = new SendGridClient("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");
             var from = new EmailAddress("juan.addon@gmail.com", "Jose Adon");

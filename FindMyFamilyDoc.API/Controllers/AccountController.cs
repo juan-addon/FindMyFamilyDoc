@@ -1,11 +1,9 @@
 ﻿using FindMyFamilyDoc.API.Authentication;
 using FindMyFamilyDoc.Business.Interfaces;
+using FindMyFamilyDoc.Shared.Enums;
+using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace FindMyFamilyDoc.API.Controllers
 {
@@ -14,7 +12,6 @@ namespace FindMyFamilyDoc.API.Controllers
     public class AccountController : BaseController
     {
         private readonly IAccountService _accountService;
-        
         public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
@@ -28,45 +25,51 @@ namespace FindMyFamilyDoc.API.Controllers
 
             if (result.Succeeded)
             {
-                return Success(new { Message = result.Succeeded });
+                return Result(Success(
+					new
+					{
+						User = new
+                        {
+							model.FirstName,
+                            model.LastName,
+                            model.Email,
+                            model.Role
+						},
+						Message = "Your account has been created. Please check your email for a confirmation link."
+					}
+				));
             }
             else
             {
                 var errorMessages = result.Errors.Select(e => e.Description);
-                return Error(errorMessages);
+                return Result(Error<User>(ApiErrorCode.ValidationError, errorMessages));
             }
         }
 
-        [HttpPut("ConfirmEmail")]
-        [ServiceFilter(typeof(ApiKeyAuthFilter))]
-        public async Task<IActionResult> ConfirmEmail(UserAccountConfirmationViewModel model)
-        {
-            if (model.UserId == null || model.Token == null)
-            {
-                return Error("User id and token are required.");
-            }
+		[HttpPut("confirm-email")]
+		[ServiceFilter(typeof(ApiKeyAuthFilter))]
+		public async Task<IActionResult> ConfirmEmail(UserAccountConfirmationViewModel model)
+		{
+			if (model.UserId == null || model.Token == null)
+			{
+				return Result(Error<User>(ApiErrorCode.Unauthorized, "User id and token are required."));
+			}
 
-            try
-            {
-                var result = await _accountService.ConfirmEmailAsync(model);
-                if (!result.Succeeded)
-                {
-                    return Error("Error confirming email.");
-                }
-            }
-            catch (ArgumentException ex)
-            {
-                return Error(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return Error(ex.Message);
-            }
+			var result = await _accountService.ConfirmEmailAsync(model);
 
-            return Success( new { Message = "Email confirmed successfully." });
-        }
+			if (!result.Success)
+			{
+				return Result(result);
+			}
 
-        [HttpPost("login")]
+			return Result(Success(new
+			{
+				UserId = model.UserId,
+				Message = "Your account has been activated."
+			}));
+		}
+
+		[HttpPost("login")]
         [ServiceFilter(typeof(ApiKeyAuthFilter))]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -74,62 +77,61 @@ namespace FindMyFamilyDoc.API.Controllers
 
             if (signInResult.Succeeded)
             {
-                return Success(new { LoginResult = result });
+                return Result(Success(result));
             }
             else if (signInResult.IsLockedOut)
             {
-                return Error("Account is locked out");
+                return Result(Error<User>(ApiErrorCode.UserLocked, "Account is locked out"));
             }
             else
             {
-                return Error("Invalid login credentials");
+                return Result(Error<User>(ApiErrorCode.InvalidCredentials, "Invalid login credentials"));
             }
         }
 
-        [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Error("User is not authenticated");
-            }
+		[HttpPost("logout")]
+		[ServiceFilter(typeof(ApiKeyAuthFilter))]
+		public async Task<IActionResult> Logout(LogoutViewModel model)
+		{
+			if (string.IsNullOrEmpty(model.UserId))
+			{
+				return Result(Error<User>(ApiErrorCode.UserNotAuthenticated, "User is not authenticated."));
+			}
 
-            try
-            {
-                await _accountService.LogoutAsync(userId);
-            }
-            catch (ArgumentNullException)
-            {
-                // Log exception
-                return Error("User Id is missing.");
-            }
-            catch (ArgumentException)
-            {
-                // Log exception
-                return Error("User not found.");
-            }
+			var result = await _accountService.LogoutAsync(model.UserId);
+			return Result(result);
+		}
 
-            return Success( new {Message = "Success" });
-        }
+		[HttpPost("forgot-password")]
+		[ServiceFilter(typeof(ApiKeyAuthFilter))]
+		public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+		{
+			var result = await _accountService.ForgotPasswordAsync(model);
+			return Result(result);
+		}
 
+		[HttpPost("confirm-reset-password-token")]
+		[ServiceFilter(typeof(ApiKeyAuthFilter))]
+		public async Task<IActionResult> ConfirmResetPasswordToken(UserAccountConfirmationViewModel model)
+		{
+			var result = await _accountService.ConfirmResetPasswordTokenAsync(model.UserId, model.Token);
+			return Result(result);
+		}
 
-        [HttpPost("refreshJwtToken")]
-        [ServiceFilter(typeof(ApiKeyAuthFilter))]
-        public async Task<IActionResult> RefreshJwtToken(RefreshTokenViewModel model)
-        {
-            var newToken = await _accountService.RefreshTokenAsync(model);
+		[HttpPut("reset-password")]
+		[ServiceFilter(typeof(ApiKeyAuthFilter))]
+		public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+		{
+			var result = await _accountService.ResetPasswordAsync(model);
+			return Result(result);
+		}
 
-            if (newToken.IsNullOrEmpty())
-            {
-                return Error("Invalid refresh token.");
-            }
-
-            return Success(new
-            {
-                Token = newToken
-            });
-        }
-
+		[HttpPost("refreshJwtToken")]
+		[ServiceFilter(typeof(ApiKeyAuthFilter))]
+		public async Task<IActionResult> RefreshToken(RefreshTokenViewModel model)
+		{
+			var result = await _accountService.RefreshTokenAsync(model);
+			return Result(result);
+		}
     }
 }
