@@ -100,5 +100,4 @@ namespace FindMyFamilyDoc.Shared.ViewModels
 		[Required]
 		public string NewPassword { get; set; } = default!;
 	}
-
 }
