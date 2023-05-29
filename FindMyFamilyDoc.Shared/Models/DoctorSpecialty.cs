@@ -1,11 +1,15 @@
-﻿namespace FindMyFamilyDoc.Shared.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FindMyFamilyDoc.Shared.Models
 {
     public class DoctorSpecialty : BaseEntity
     {
-        public int DoctorId { get; set; }
+		[ForeignKey("Doctor")]
+		public int DoctorId { get; set; }
         public Doctor Doctor { get; set; } = default!;
 
-        public int SpecialtyId { get; set; }
+		[ForeignKey("Specialty")]
+		public int SpecialtyId { get; set; }
         public Specialty Specialty { get; set; } = default!;
     }
 }
