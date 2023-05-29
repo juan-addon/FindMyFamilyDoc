@@ -10,5 +10,6 @@ namespace FindMyFamilyDoc.Business.Interfaces
 		Task<Result<IEnumerable<City>>> GetCitiesByState(int stateId);
 		Task<Result<IEnumerable<object>>> GetStatesWithCities();
 		Task<Result<IEnumerable<Specialty>>> GetSpecialties();
+		Task<Result<IEnumerable<Language>>> GetLanguages();
 	}
 }

@@ -4,7 +4,6 @@ using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SendGrid.Helpers.Mail;
 
 namespace FindMyFamilyDoc.Business.Services
 {
@@ -118,6 +117,25 @@ namespace FindMyFamilyDoc.Business.Services
 			catch (Exception ex)
 			{
 				return new Result<IEnumerable<Specialty>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+			}
+		}
+
+		public async Task<Result<IEnumerable<Language>>> GetLanguages()
+		{
+			try
+			{
+				var languages = await _dbContext.Languages.ToListAsync();
+
+				if (languages == null || !languages.Any())
+				{
+					return new Result<IEnumerable<Language>>(ApiErrorCode.DataNotFound.ToString(), "Languages not found");
+				}
+
+				return new Result<IEnumerable<Language>>(languages);
+			}
+			catch (Exception ex)
+			{
+				return new Result<IEnumerable<Language>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
 			}
 		}
 	}

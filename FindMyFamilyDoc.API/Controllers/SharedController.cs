@@ -49,5 +49,12 @@ namespace FindMyFamilyDoc.API.Controllers
 			var result = await _dataService.GetSpecialties();
 			return Result(result);
 		}
+
+		[HttpGet("languages")]
+		public async Task<IActionResult> GetLanguages()
+		{
+			var result = await _dataService.GetLanguages();
+			return Result(result);
+		}
 	}
 }
