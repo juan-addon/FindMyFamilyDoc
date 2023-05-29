@@ -29,7 +29,9 @@ namespace FindMyFamilyDoc.Business
         {
             base.OnModelCreating(modelBuilder);
 
-            var roles = Enum.GetValues(typeof(UserRoles)).Cast<UserRoles>().Select(e => new IdentityRole
+			//modelBuilder.Entity<BaseEntity>().Property(b => b.CreatedAt).HasDefaultValueSql("GETDATE()");
+
+			var roles = Enum.GetValues(typeof(UserRoles)).Cast<UserRoles>().Select(e => new IdentityRole
             {
                 Name = e.ToString(),
                 NormalizedName = e.ToString().ToUpper()
@@ -37,6 +39,11 @@ namespace FindMyFamilyDoc.Business
 
             modelBuilder.Entity<IdentityRole>().HasData(roles);
             ModelBuilderStateDataSeeder.Seed(modelBuilder);
-        }
-    }
+		}
+
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		{
+			optionsBuilder.EnableSensitiveDataLogging();
+		}
+	}
 }

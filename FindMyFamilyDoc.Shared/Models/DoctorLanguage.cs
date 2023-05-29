@@ -2,7 +2,7 @@
 
 namespace FindMyFamilyDoc.Shared.Models
 {
-	public class DoctorLanguage
+	public class DoctorLanguage: BaseEntity
 	{
 		[ForeignKey("Doctor")]
 		public int DoctorId { get; set; }

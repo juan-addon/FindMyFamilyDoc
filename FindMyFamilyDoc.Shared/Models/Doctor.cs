@@ -6,29 +6,29 @@ namespace FindMyFamilyDoc.Shared.Models
     {
 
 		[Required]
-		public string Title { get; set; }
+		public string Title { get; set; } = default!;
 
 		[Required]
-		public string Name { get; set; }
+		public string Name { get; set; } = default!;
 
 		[Required]
-		public string Phone { get; set; }
+		public string Phone { get; set; } = default!;
 
 		[Required]
-		public string ContactInformation { get; set; }
+		public string ContactInformation { get; set; } = default!;
 
 		[Required]
-		public string Availability { get; set; }
+		public string Availability { get; set; } = default!;
 
 		[Required]
-		public int WaitingTime { get; set; }
+		public int WaitingTime { get; set; } 
 
 		public float Rating { get; set; }
 
 		[Required]
 		public decimal Fees { get; set; }
 
-		public byte[] ProfilePicture { get; set; }
+		public byte[] ProfilePicture { get; set; } = default!;
 
 		[Required]
 		public bool IsAcceptingNewPatients { get; set; }
