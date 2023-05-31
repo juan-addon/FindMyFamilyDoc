@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Shared.Models
 {
@@ -32,6 +33,11 @@ namespace FindMyFamilyDoc.Shared.Models
 
 		[Required]
 		public bool IsAcceptingNewPatients { get; set; }
+
+		[Required]
+		public string UserId { get; set; } = default!;
+
+		public User User { get; set; }
 
 		public ICollection<DoctorLanguage> DoctorLanguages { get; set; } = new List<DoctorLanguage>();
 
