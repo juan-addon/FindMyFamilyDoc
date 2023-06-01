@@ -34,12 +34,23 @@ namespace FindMyFamilyDoc.Shared.Models
 		[Required]
 		public bool IsAcceptingNewPatients { get; set; }
 
-		[Required]
+		
 		public string UserId { get; set; } = default!;
 
 		public User User { get; set; }
 
-		public ICollection<DoctorLanguage> DoctorLanguages { get; set; } = new List<DoctorLanguage>();
+        // The city where the Doctor practices
+        [Required]
+        public int CityId { get; set; }
+        public City City { get; set; }
+
+        [Required]
+        public string StreetNumber { get; set; } = default!;
+
+        [Required]
+        public string PostalCode { get; set; } = default!;
+
+        public ICollection<DoctorLanguage> DoctorLanguages { get; set; } = new List<DoctorLanguage>();
 
 		public ICollection<DoctorEducationBackground> DoctorEducationBackgrounds { get; set; } = new List<DoctorEducationBackground>();
 

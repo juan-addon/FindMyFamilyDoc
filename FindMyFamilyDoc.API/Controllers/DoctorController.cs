@@ -1,7 +1,7 @@
-﻿using FindMyFamilyDoc.Shared.Enums;
+﻿using FindMyFamilyDoc.Business.Interfaces;
+using FindMyFamilyDoc.Shared.Enums;
+using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace FindMyFamilyDoc.API.Controllers
 {
@@ -10,36 +10,33 @@ namespace FindMyFamilyDoc.API.Controllers
     [ApiController]
     public class DoctorController : BaseController
     {
-        // GET: api/<DoctorController>
-        [HttpGet("get_doc_info")]
-        public IEnumerable<string> Get()
+        private readonly IDoctorService _doctorService;
+
+        public DoctorController(IDoctorService doctorService)
         {
-            return new string[] { "value1", "value2" };
+            _doctorService = doctorService;
         }
 
-        // GET api/<DoctorController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("pending-doctors")]
+        public async Task<IActionResult> GetDoctors()
         {
-            return "value";
+            var result = await _doctorService.GetDoctors();
+            return Result(result);
         }
 
-        // POST api/<DoctorController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet("pending-doctors/{id}")]
+        public async Task<IActionResult> GetDoctorById(int id)
         {
+            var result = await _doctorService.GetDoctorById(id);
+            return Result(result);
         }
 
-        // PUT api/<DoctorController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPost("create-doctor")]
+        public async Task<IActionResult> CreateDoctor([FromBody] DoctorViewModel model)
         {
-        }
-
-        // DELETE api/<DoctorController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var result = await _doctorService.CreateDoctor(model);
+            return Result(result);
         }
     }
+
 }

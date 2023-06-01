@@ -1,5 +1,6 @@
 ﻿using FindMyFamilyDoc.Business.Helpers;
 using FindMyFamilyDoc.Shared.Models;
+using FindMyFamilyDoc.Shared.ViewModels;
 
 namespace FindMyFamilyDoc.Business.Interfaces
 {
@@ -7,9 +8,6 @@ namespace FindMyFamilyDoc.Business.Interfaces
 	{
 		Task<Result<IEnumerable<Doctor>>> GetDoctors();
 		Task<Result<Doctor>> GetDoctorById(int id);
-		Task<Result<Doctor>> CreateDoctor(Doctor doctor);
-		Task<Result<Doctor>> UpdateDoctor(Doctor doctor);
-		Task<Result<bool>> DeleteDoctor(int id);
+		Task<Result<Doctor>> CreateDoctor(DoctorViewModel model);
 	}
-
 }
