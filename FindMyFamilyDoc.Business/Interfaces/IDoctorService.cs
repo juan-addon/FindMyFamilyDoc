@@ -8,6 +8,6 @@ namespace FindMyFamilyDoc.Business.Interfaces
 	{
 		Task<Result<IEnumerable<Doctor>>> GetDoctors();
 		Task<Result<Doctor>> GetDoctorById(int id);
-		Task<Result<Doctor>> CreateDoctor(DoctorViewModel model);
+		Task<Result<dynamic>> CreateDoctor(DoctorViewModel model);
 	}
 }

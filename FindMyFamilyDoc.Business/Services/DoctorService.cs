@@ -46,7 +46,7 @@ namespace FindMyFamilyDoc.Business.Services
 			}
 		}
 
-        public async Task<Result<Doctor>> CreateDoctor(DoctorViewModel model)
+        public async Task<Result<dynamic>> CreateDoctor(DoctorViewModel model)
         {
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
@@ -54,7 +54,7 @@ namespace FindMyFamilyDoc.Business.Services
             {
                 var validationError = await ValidateDoctorCreation(model);
                 if (!string.IsNullOrEmpty(validationError))
-                    return new Result<Doctor>(ApiErrorCode.NotFound.ToString(), validationError);
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), validationError);
 
                 var doctor = MapViewModelToDoctor(model);
 
@@ -64,17 +64,26 @@ namespace FindMyFamilyDoc.Business.Services
 
                 await transaction.CommitAsync();
 
-                return new Result<Doctor>(doctor);
+                return new Result<dynamic>(new
+                {
+                    User = new
+                    {
+                        doctor.Name,
+                        doctor.UserId,
+                        doctor.Title
+                    },
+                    Message = "Your account has been created and your profile submitted. Please note that your profile must be approved by an administrator before you can fully access your account. Check your email for further updates."
+                });
             }
             catch (SqlException ex)
             {
                 await transaction.RollbackAsync();
-                return new Result<Doctor>(ApiErrorCode.InternalServerError.ToString(), $"A database error occurred while creating the doctor: {ex.Message}");
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"A database error occurred while creating the doctor: {ex.Message}");
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return new Result<Doctor>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while creating the doctor: {ex.Message}");
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while creating the doctor: {ex.Message}");
             }
         }
 
@@ -85,6 +94,11 @@ namespace FindMyFamilyDoc.Business.Services
             if (!userExists)
                 return "User not found.";
 
+            //Duplicate Doctor
+            var doctorExists = await _dbContext.Doctors.AnyAsync(u => u.UserId == model.UserId);
+            if (doctorExists)
+                return "A Doctor profile already exists for this user. Each user can only have one Doctor profile.";
+
             // Validate CityId
             var cityExists = await _dbContext.Cities.AnyAsync(c => c.Id == model.CityId);
             if (!cityExists)
@@ -92,21 +106,15 @@ namespace FindMyFamilyDoc.Business.Services
 
             // Validate DoctorLanguages
             var languageIds = model.DoctorLanguages.Select(l => l.LanguageId);
-            var missingLanguageIds = await _dbContext.Languages
-                .Where(l => languageIds.Contains(l.Id))
-                .Select(l => l.Id)
-                .Except(languageIds)
-                .ToListAsync();
+            var dbLanguageIds = await _dbContext.Languages.Select(l => l.Id).ToListAsync();
+            var missingLanguageIds = languageIds.Where(id => !dbLanguageIds.Contains(id)).ToList();
             if (missingLanguageIds.Any())
                 return $"Languages with IDs {string.Join(", ", missingLanguageIds)} not found.";
 
             // Validate DoctorSpecialties
             var specialtyIds = model.DoctorSpecialties.Select(s => s.SpecialtyId);
-            var missingSpecialtyIds = await _dbContext.Specialties
-                .Where(s => specialtyIds.Contains(s.Id))
-                .Select(s => s.Id)
-                .Except(specialtyIds)
-                .ToListAsync();
+            var dbSpecialtyIds = await _dbContext.Specialties.Select(s => s.Id).ToListAsync();
+            var missingSpecialtyIds = specialtyIds.Where(id => !dbSpecialtyIds.Contains(id)).ToList();
             if (missingSpecialtyIds.Any())
                 return $"Specialties with IDs {string.Join(", ", missingSpecialtyIds)} not found.";
 

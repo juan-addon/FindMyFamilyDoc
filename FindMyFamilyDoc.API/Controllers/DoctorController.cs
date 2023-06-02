@@ -18,9 +18,9 @@ namespace FindMyFamilyDoc.API.Controllers
             _doctorService = doctorService;
         }
 
-        [HttpGet("pending-doctors")]
+        [HttpPost("pending-doctors")]
         [RoleAuthorize(UserRoles.Admin)]
-        public async Task<IActionResult> GetDoctors()
+        public async Task<IActionResult> GetPendingDoctors()
         {
             var result = await _doctorService.GetDoctors();
             return Result(result);
@@ -35,7 +35,7 @@ namespace FindMyFamilyDoc.API.Controllers
         }
 
         [HttpPost("create-doctor")]
-        [RoleAuthorize(UserRoles.Doctor)]
+        [RoleAuthorize(UserRoles.DoctorUnderReview)]
         public async Task<IActionResult> CreateDoctor([FromBody] DoctorViewModel model)
         {
             var result = await _doctorService.CreateDoctor(model);

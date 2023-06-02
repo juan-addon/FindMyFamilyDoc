@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Shared.Models
 {
+    [Index(nameof(UserId), IsUnique = true, Name = "Unique_UserId_Doctor")]
     public class Doctor : BaseEntity
     {
 

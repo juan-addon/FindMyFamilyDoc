@@ -81,11 +81,15 @@ namespace FindMyFamilyDoc.API.Controllers
             }
             else if (signInResult.IsLockedOut)
             {
-                return Result(Error<User>(ApiErrorCode.UserLocked, "Account is locked out"));
+                return Result(Error<User>(ApiErrorCode.UserLocked, "Account is locked out."));
+            }
+            else if (signInResult.IsNotAllowed)
+            {
+                return Result(Error<User>(ApiErrorCode.UserNotActivated, "Account is not allowed to login, please make sure that you activate your account."));
             }
             else
             {
-                return Result(Error<User>(ApiErrorCode.InvalidCredentials, "Invalid login credentials"));
+                return Result(Error<User>(ApiErrorCode.InvalidCredentials, "Invalid login credentials."));
             }
         }
 

@@ -1,15 +1,16 @@
 ﻿using FindMyFamilyDoc.Business.Helpers;
-using FindMyFamilyDoc.Shared.Models;
+using FindMyFamilyDoc.Shared.ViewModels;
 
 namespace FindMyFamilyDoc.Business.Interfaces
 {
 	public interface IDataService
 	{
 		Task<Result<IEnumerable<string>>> GetRoles();
-		Task<Result<IEnumerable<State>>> GetStates();
-		Task<Result<IEnumerable<City>>> GetCitiesByState(int stateId);
-		Task<Result<IEnumerable<object>>> GetStatesWithCities();
-		Task<Result<IEnumerable<Specialty>>> GetSpecialties();
-		Task<Result<IEnumerable<Language>>> GetLanguages();
+		Task<Result<IEnumerable<StateViewModel>>> GetStates();
+		Task<Result<IEnumerable<CityViewModel>>> GetCitiesByState(int stateId);
+		Task<Result<IEnumerable<CityViewModel>>> GetCities();
+        Task<Result<IEnumerable<object>>> GetStatesWithCities();
+		Task<Result<IEnumerable<SpecialtyViewModel>>> GetSpecialties();
+		Task<Result<IEnumerable<LanguageViewModel>>> GetLanguages();
 	}
 }

@@ -27,13 +27,13 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string StreetNumber { get; set; } = default!;
         [Required]
         public string PostalCode { get; set; } = default!;
-        public IList<LanguageViewModel> DoctorLanguages { get; set; } = new List<LanguageViewModel>();
+        public IList<DoctorLanguageViewModel> DoctorLanguages { get; set; } = new List<DoctorLanguageViewModel>();
         public IList<DoctorEducationBackgroundViewModel> DoctorEducationBackgrounds { get; set; } = new List<DoctorEducationBackgroundViewModel>();
         public IList<DoctorExperienceViewModel> Experiences { get; set; } = new List<DoctorExperienceViewModel>();
-        public IList<SpecialtyViewModel> DoctorSpecialties { get; set; } = new List<SpecialtyViewModel>();
+        public IList<DoctorSpecialtyViewModel> DoctorSpecialties { get; set; } = new List<DoctorSpecialtyViewModel>();
     }
 
-    public class LanguageViewModel
+    public class DoctorLanguageViewModel
     {
         public int LanguageId { get; set; }
     }
@@ -61,7 +61,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public DateTime? EndDate { get; set; }
     }
 
-    public class SpecialtyViewModel
+    public class DoctorSpecialtyViewModel
     {
         public int SpecialtyId { get; set; }
     }

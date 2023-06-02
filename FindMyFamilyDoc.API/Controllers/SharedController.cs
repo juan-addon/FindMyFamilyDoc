@@ -36,14 +36,21 @@ namespace FindMyFamilyDoc.API.Controllers
 			return Result(result);
 		}
 
-		[HttpGet("cities")]
+		[HttpGet("cities-by-state")]
 		public async Task<IActionResult> GetCitiesByState(int stateId)
 		{
 			var result = await _dataService.GetCitiesByState(stateId);
 			return Result(result);
 		}
 
-		[HttpGet("specialties")]
+        [HttpGet("cities")]
+        public async Task<IActionResult> GetCities()
+        {
+            var result = await _dataService.GetCities();
+            return Result(result);
+        }
+
+        [HttpGet("specialties")]
 		public async Task<IActionResult> GetSpecialties()
 		{
 			var result = await _dataService.GetSpecialties();
