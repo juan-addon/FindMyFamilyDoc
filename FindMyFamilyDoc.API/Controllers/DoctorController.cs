@@ -1,13 +1,14 @@
-﻿using FindMyFamilyDoc.Business.Interfaces;
+﻿using FindMyFamilyDoc.API.Authentication;
+using FindMyFamilyDoc.Business.Interfaces;
 using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FindMyFamilyDoc.API.Controllers
 {
-    [RoleAuthorize(UserRoles.Admin)]
     [Route("api/[controller]")]
     [ApiController]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
     public class DoctorController : BaseController
     {
         private readonly IDoctorService _doctorService;
@@ -18,6 +19,7 @@ namespace FindMyFamilyDoc.API.Controllers
         }
 
         [HttpGet("pending-doctors")]
+        [RoleAuthorize(UserRoles.Admin)]
         public async Task<IActionResult> GetDoctors()
         {
             var result = await _doctorService.GetDoctors();
@@ -25,6 +27,7 @@ namespace FindMyFamilyDoc.API.Controllers
         }
 
         [HttpGet("pending-doctors/{id}")]
+        [RoleAuthorize(UserRoles.Admin)]
         public async Task<IActionResult> GetDoctorById(int id)
         {
             var result = await _doctorService.GetDoctorById(id);
@@ -32,11 +35,19 @@ namespace FindMyFamilyDoc.API.Controllers
         }
 
         [HttpPost("create-doctor")]
+        [RoleAuthorize(UserRoles.Doctor)]
         public async Task<IActionResult> CreateDoctor([FromBody] DoctorViewModel model)
         {
             var result = await _doctorService.CreateDoctor(model);
             return Result(result);
         }
-    }
 
+        [HttpGet("doctor-profile/{id}")]
+        [RoleAuthorize(UserRoles.Doctor)]
+        public async Task<IActionResult> GetDoctorProfileById(int id)
+        {
+            var result = await _doctorService.GetDoctorById(id);
+            return Result(result);
+        }
+    }
 }

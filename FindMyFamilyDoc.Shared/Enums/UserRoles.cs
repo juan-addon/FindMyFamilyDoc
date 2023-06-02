@@ -6,6 +6,7 @@ namespace FindMyFamilyDoc.Shared.Enums
     {
         Admin,
         Doctor,
+        DoctorUnderReview,
         Patience,
         AdministractiveAssistant,
     }

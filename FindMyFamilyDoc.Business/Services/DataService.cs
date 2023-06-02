@@ -22,9 +22,12 @@ namespace FindMyFamilyDoc.Business.Services
 		{
 			try
 			{
-				var roles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
+                var roles = await _roleManager.Roles
+					.Where(r => r.Name != UserRoles.DoctorUnderReview.ToString())
+					.Select(r => r.Name)
+					.ToListAsync();
 
-				if (roles == null)
+                if (roles == null)
 				{
 					return new Result<IEnumerable<string>>(ApiErrorCode.DataNotFound.ToString(), "Roles not found");
 				}
