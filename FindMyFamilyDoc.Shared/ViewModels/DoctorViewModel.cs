@@ -24,7 +24,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         [Required]
         public int CityId { get; set; }
         [Required]
-        public string StreetNumber { get; set; } = default!;
+        public string Street { get; set; } = default!;
         [Required]
         public string PostalCode { get; set; } = default!;
         public IList<DoctorLanguageViewModel> DoctorLanguages { get; set; } = new List<DoctorLanguageViewModel>();
@@ -64,5 +64,19 @@ namespace FindMyFamilyDoc.Shared.ViewModels
     public class DoctorSpecialtyViewModel
     {
         public int SpecialtyId { get; set; }
+    }
+
+    public class DoctorsUnderReviewViewModel
+    {
+        public int DoctorId { get; set; }
+        public string DoctorName { get; set; } = default!;
+        public bool IsAcceptingNewPatients { get; set; } = default!;
+        public string Phone { get; set; } = default!;
+        public string Title { get; set; } = default!;
+        public decimal Fees { get; set; } = default!;
+        public string State { get; set; } = default!;
+        public string City { get; set; } = default!;
+        public string Address { get; set; } = default!;
+        public string PostalCode { get; set; } = default!;
     }
 }

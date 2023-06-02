@@ -46,7 +46,7 @@ namespace FindMyFamilyDoc.Shared.Models
         public City City { get; set; }
 
         [Required]
-        public string StreetNumber { get; set; } = default!;
+        public string Street { get; set; } = default!;
 
         [Required]
         public string PostalCode { get; set; } = default!;

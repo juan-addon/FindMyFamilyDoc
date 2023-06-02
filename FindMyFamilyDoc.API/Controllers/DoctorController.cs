@@ -19,18 +19,18 @@ namespace FindMyFamilyDoc.API.Controllers
         }
 
         [HttpPost("pending-doctors")]
-        [RoleAuthorize(UserRoles.Admin)]
+        //[RoleAuthorize(UserRoles.Admin)]
         public async Task<IActionResult> GetPendingDoctors()
         {
-            var result = await _doctorService.GetDoctors();
+            var result = await _doctorService.GetDoctorsUnderReview();
             return Result(result);
         }
 
         [HttpGet("pending-doctors/{id}")]
-        [RoleAuthorize(UserRoles.Admin)]
-        public async Task<IActionResult> GetDoctorById(int id)
+        //[RoleAuthorize(UserRoles.Admin)]
+        public async Task<IActionResult> GetDoctorUnderReviewById(int id)
         {
-            var result = await _doctorService.GetDoctorById(id);
+            var result = await _doctorService.GetDoctorUnderReviewById(id);
             return Result(result);
         }
 
@@ -46,7 +46,7 @@ namespace FindMyFamilyDoc.API.Controllers
         [RoleAuthorize(UserRoles.Doctor)]
         public async Task<IActionResult> GetDoctorProfileById(int id)
         {
-            var result = await _doctorService.GetDoctorById(id);
+            var result = await _doctorService.GetDoctorUnderReviewById(id);
             return Result(result);
         }
     }

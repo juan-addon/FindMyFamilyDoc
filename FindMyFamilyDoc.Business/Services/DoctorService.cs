@@ -17,32 +17,107 @@ namespace FindMyFamilyDoc.Business.Services
 			_dbContext = dbContext;
 		}
 
-		public async Task<Result<IEnumerable<Doctor>>> GetDoctors()
+		public async Task<Result<IEnumerable<dynamic>>> GetDoctors()
 		{
 			try
 			{
 				var doctors = await _dbContext.Doctors.ToListAsync();
-				return new Result<IEnumerable<Doctor>>(doctors);
+				return new Result<IEnumerable<dynamic>>(doctors);
 			}
 			catch (Exception ex)
 			{
-				return new Result<IEnumerable<Doctor>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving doctors: {ex.Message}");
+				return new Result<IEnumerable<dynamic>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving doctors: {ex.Message}");
 			}
 		}
 
-		public async Task<Result<Doctor>> GetDoctorById(int id)
+        public async Task<Result<IEnumerable<DoctorsUnderReviewViewModel>>> GetDoctorsUnderReview()
+        {
+            try
+            {
+                var doctorsUnderReview = await GetDoctorsUnderReviewQuery()
+                     .Select(d => new DoctorsUnderReviewViewModel
+                     {
+                         DoctorId = d.Id,
+                         DoctorName = d.Name,
+                         IsAcceptingNewPatients = d.IsAcceptingNewPatients,
+                         Phone = d.Phone,
+                         Title = d.Title,
+                         Fees = d.Fees,
+                         State = d.City.State.Name,
+                         City = d.City.Name,
+                         Address = d.Street,
+                         PostalCode = d.PostalCode
+                     })
+                     .ToListAsync();
+
+                return new Result<IEnumerable<DoctorsUnderReviewViewModel>>(doctorsUnderReview);
+            }
+            catch (Exception ex)
+            {
+                return new Result<IEnumerable<DoctorsUnderReviewViewModel>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving doctors: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<DoctorDetailViewModel>> GetDoctorUnderReviewById(int id)
 		{
 			try
 			{
-				var doctor = await _dbContext.Doctors.FindAsync(id);
-				if (doctor != null)
-					return new Result<Doctor>(doctor);
+                var doctor = await GetDoctorsUnderReviewQuery()
+                    .Where(m => m.Id == id)
+                    .Select(d => new DoctorDetailViewModel
+                    {
+                        DoctorId = d.Id,
+                        Title = d.Title,
+                        Name = d.Name,
+                        Phone = d.Phone,
+                        ContactInformation = d.ContactInformation,
+                        Availability = d.Availability,
+                        WaitingTime = d.WaitingTime,
+                        Fees = d.Fees,
+                        ProfilePicture = d.ProfilePicture,
+                        IsAcceptingNewPatients = d.IsAcceptingNewPatients,
+                        UserId = d.UserId,
+                        City = d.City.Name,
+                        State = d.City.State.Name,
+                        Street = d.Street,
+                        PostalCode = d.PostalCode,
+                        DoctorLanguages = d.DoctorLanguages.Select(dl => new DoctorDetailLanguageViewModel
+                        {
+                            LanguageId = dl.LanguageId,
+                            LanguageName = dl.Language.Name // assuming the language name is available
+                        }).ToList(),
+                        DoctorEducationBackgrounds = d.DoctorEducationBackgrounds.Select(eb => new DoctorDetailEducationBackgroundViewModel
+                        {
+                            DoctorEducationBackgroundId = eb.Id,
+                            InstitutionName = eb.InstitutionName,
+                            Degree = eb.Degree,
+                            FieldOfStudy = eb.FieldOfStudy,
+                            StartDate = eb.StartDate,
+                            EndDate = eb.EndDate
+                        }).ToList(),
+                        Experiences = d.Experiences.Select(e => new DoctorDetailExperienceViewModel
+                        {
+                            DoctorExperienceId = e.Id,
+                            CompanyName = e.CompanyName,
+                            Description = e.Description,
+                            StartDate = e.StartDate,
+                            EndDate = e.EndDate
+                        }).ToList(),
+                        DoctorSpecialties = d.DoctorSpecialties.Select(ds => new DoctorDetailSpecialtyViewModel
+                        {
+                            DoctorSpecialtyId = ds.SpecialtyId,
+                            SpecialtyName = ds.Specialty.Name // assuming the specialty name is available
+                        }).ToList()
+                    }).FirstOrDefaultAsync();
+
+                if (doctor != null)
+					return new Result<DoctorDetailViewModel>(doctor);
 				else
-					return new Result<Doctor>(ApiErrorCode.DataNotFound.ToString(), $"Doctor with ID {id} not found.");
+					return new Result<DoctorDetailViewModel>(ApiErrorCode.DataNotFound.ToString(), $"Doctor with ID {id} not found.");
 			}
 			catch (Exception ex)
 			{
-				return new Result<Doctor>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving the doctor: {ex.Message}");
+				return new Result<DoctorDetailViewModel>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving the doctor: {ex.Message}");
 			}
 		}
 
@@ -136,7 +211,7 @@ namespace FindMyFamilyDoc.Business.Services
                 IsAcceptingNewPatients = model.IsAcceptingNewPatients,
                 UserId = model.UserId,
                 CityId = model.CityId,
-                StreetNumber = model.StreetNumber,
+                Street = model.Street,
                 PostalCode = model.PostalCode
             };
 
@@ -172,6 +247,16 @@ namespace FindMyFamilyDoc.Business.Services
             }).ToList();
 
             return doctor;
+        }
+
+        private IQueryable<Doctor> GetDoctorsUnderReviewQuery()
+        {
+            return from d in _dbContext.Doctors
+                   join u in _dbContext.Users on d.UserId equals u.Id
+                   join ur in _dbContext.UserRoles on u.Id equals ur.UserId
+                   join r in _dbContext.Roles on ur.RoleId equals r.Id
+                   where r.Name == UserRoles.DoctorUnderReview.ToString()
+                   select d;
         }
     }
 }
