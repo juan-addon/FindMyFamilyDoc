@@ -1,5 +1,4 @@
 ﻿using FindMyFamilyDoc.Business.Helpers;
-using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
 
 namespace FindMyFamilyDoc.Business.Interfaces
@@ -10,5 +9,5 @@ namespace FindMyFamilyDoc.Business.Interfaces
         Task<Result<IEnumerable<DoctorsUnderReviewViewModel>>> GetDoctorsUnderReview();
         Task<Result<DoctorDetailViewModel>> GetDoctorUnderReviewById(int id);
 		Task<Result<dynamic>> CreateDoctor(DoctorViewModel model);
-	}
+    }
 }
