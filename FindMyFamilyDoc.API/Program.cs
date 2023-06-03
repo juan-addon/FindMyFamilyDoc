@@ -14,6 +14,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddCors(o =>
+{
+    o.AddPolicy("CorsPolicy", builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
+
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -77,7 +88,7 @@ app.UseSwaggerUI(options =>
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
-
+app.UseCors("CorsPolicy"); // Apply the CORS policy to the request pipeline
 app.UseAuthentication();
 app.UseAuthorization();
 
