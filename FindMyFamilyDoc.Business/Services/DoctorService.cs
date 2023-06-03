@@ -12,7 +12,7 @@ namespace FindMyFamilyDoc.Business.Services
 	{
 		private readonly DatabaseContext _dbContext;
 
-		public DoctorService(DatabaseContext dbContext)
+        public DoctorService(DatabaseContext dbContext)
 		{
 			_dbContext = dbContext;
 		}
@@ -34,7 +34,9 @@ namespace FindMyFamilyDoc.Business.Services
         {
             try
             {
-                var doctorsUnderReview = await GetDoctorsUnderReviewQuery()
+
+                var queryable = await QueryHelper.GetDoctorsUnderReviewQueryAsync(_dbContext);
+                var doctorsUnderReview = await queryable
                      .Select(d => new DoctorsUnderReviewViewModel
                      {
                          DoctorId = d.Id,
@@ -62,7 +64,8 @@ namespace FindMyFamilyDoc.Business.Services
 		{
 			try
 			{
-                var doctor = await GetDoctorsUnderReviewQuery()
+                var queryable = await QueryHelper.GetDoctorsUnderReviewQueryAsync(_dbContext);
+                var doctor = await queryable
                     .Where(m => m.Id == id)
                     .Select(d => new DoctorDetailViewModel
                     {
@@ -162,6 +165,77 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        public async Task<Result<DoctorDetailViewModel>> GetDoctorProfile(string UserId)
+        {
+            try
+            {
+                var doctor = await _dbContext.Doctors
+                    .Include(m => m.DoctorLanguages).ThenInclude(m => m.Language)
+                    .Include(m => m.DoctorEducationBackgrounds)
+                    .Include(m => m.Experiences)
+                    .Include(m => m.DoctorSpecialties).ThenInclude(m => m.Specialty)
+                    .Include(m => m.City).ThenInclude(m => m.State)
+                    .FirstOrDefaultAsync(d => d.UserId == UserId);
+                if (doctor == null)
+                {
+                    return new Result<DoctorDetailViewModel>(ApiErrorCode.NotFound.ToString(), "Doctor profile not found.");
+                }
+
+                var doctorDetailViewModel = new DoctorDetailViewModel
+                    {
+                        DoctorId = doctor.Id,
+                        Title = doctor.Title,
+                        Name = doctor.Name,
+                        Phone = doctor.Phone,
+                        ContactInformation = doctor.ContactInformation,
+                        Availability = doctor.Availability,
+                        WaitingTime = doctor.WaitingTime,
+                        Fees = doctor.Fees,
+                        ProfilePicture = doctor.ProfilePicture,
+                        IsAcceptingNewPatients = doctor.IsAcceptingNewPatients,
+                        UserId = doctor.UserId,
+                        City = doctor.City.Name,
+                        State = doctor.City.State.Name,
+                        Street = doctor.Street,
+                        PostalCode = doctor.PostalCode,
+                        DoctorLanguages = doctor.DoctorLanguages.Select(dl => new DoctorDetailLanguageViewModel
+                        {
+                            LanguageId = dl.LanguageId,
+                            LanguageName = dl.Language.Name // assuming the language name is available
+                        }).ToList(),
+                        DoctorEducationBackgrounds = doctor.DoctorEducationBackgrounds.Select(eb => new DoctorDetailEducationBackgroundViewModel
+                        {
+                            DoctorEducationBackgroundId = eb.Id,
+                            InstitutionName = eb.InstitutionName,
+                            Degree = eb.Degree,
+                            FieldOfStudy = eb.FieldOfStudy,
+                            StartDate = eb.StartDate,
+                            EndDate = eb.EndDate
+                        }).ToList(),
+                        Experiences = doctor.Experiences.Select(e => new DoctorDetailExperienceViewModel
+                        {
+                            DoctorExperienceId = e.Id,
+                            CompanyName = e.CompanyName,
+                            Description = e.Description,
+                            StartDate = e.StartDate,
+                            EndDate = e.EndDate
+                        }).ToList(),
+                        DoctorSpecialties = doctor.DoctorSpecialties.Select(ds => new DoctorDetailSpecialtyViewModel
+                        {
+                            DoctorSpecialtyId = ds.SpecialtyId,
+                            SpecialtyName = ds.Specialty.Name
+                        }).ToList()
+                    };
+
+                return new Result<DoctorDetailViewModel>(doctorDetailViewModel);
+            }
+            catch (Exception ex)
+            {
+                return new Result<DoctorDetailViewModel>(ApiErrorCode.InternalServerError.ToString(), $"Failed to retrieve doctor profile: {ex.Message}");
+            }
+        }
+
+
         private async Task<string> ValidateDoctorCreation(DoctorViewModel model)
         {
             // Validate UserId
@@ -247,16 +321,6 @@ namespace FindMyFamilyDoc.Business.Services
             }).ToList();
 
             return doctor;
-        }
-
-        private IQueryable<Doctor> GetDoctorsUnderReviewQuery()
-        {
-            return from d in _dbContext.Doctors
-                   join u in _dbContext.Users on d.UserId equals u.Id
-                   join ur in _dbContext.UserRoles on u.Id equals ur.UserId
-                   join r in _dbContext.Roles on ur.RoleId equals r.Id
-                   where r.Name == UserRoles.DoctorUnderReview.ToString()
-                   select d;
         }
     }
 }

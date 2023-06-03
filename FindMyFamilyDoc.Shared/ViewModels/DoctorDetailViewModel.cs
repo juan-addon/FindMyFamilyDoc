@@ -1,4 +1,6 @@
-﻿namespace FindMyFamilyDoc.Shared.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FindMyFamilyDoc.Shared.ViewModels
 {
     public class DoctorDetailViewModel
     {
@@ -53,5 +55,11 @@
     {
         public int? DoctorSpecialtyId { get; set; } 
         public string? SpecialtyName { get; set; }
+    }
+
+    public class DoctorUserIdViewModel
+    {
+        [Required]
+        public string UserId { get; set; } = default!;
     }
 }

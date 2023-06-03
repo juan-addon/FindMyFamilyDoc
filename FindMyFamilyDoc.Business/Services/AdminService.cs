@@ -29,7 +29,9 @@ namespace FindMyFamilyDoc.Business.Services
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             try
             {
-                var doctor = await _dbContext.Doctors.FirstOrDefaultAsync(m => m.Id == id);
+                var queryable = await QueryHelper.GetDoctorsUnderReviewQueryAsync(_dbContext);
+                var doctor = await queryable.FirstOrDefaultAsync(m => m.Id == id);
+
                 if (doctor == null)
                     return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");
 
@@ -45,7 +47,7 @@ namespace FindMyFamilyDoc.Business.Services
                     return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"Failed to remove old roles: {errorMessage}");
                 }
 
-                var result = await _userManager.AddToRoleAsync(user, "ApprovedDoctor");
+                var result = await _userManager.AddToRoleAsync(user, UserRoles.Doctor.ToString());
                 if (!result.Succeeded)
                 {
                     var errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
@@ -73,6 +75,5 @@ namespace FindMyFamilyDoc.Business.Services
                 return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"Failed to approve doctor: {ex.Message}");
             }
         }
-
     }
 }

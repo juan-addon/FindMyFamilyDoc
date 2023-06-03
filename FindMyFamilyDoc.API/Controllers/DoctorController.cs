@@ -33,5 +33,13 @@ namespace FindMyFamilyDoc.API.Controllers
             var result = await _doctorService.CreateDoctor(model);
             return Result(result);
         }
+
+        [HttpPost("doctor-profile")]
+        [RoleAuthorize(UserRoles.Doctor)]
+        public async Task<IActionResult> GetDoctorProfile(DoctorUserIdViewModel model)
+        {
+            var result = await _doctorService.GetDoctorProfile(model.UserId);
+            return Result(result);
+        }
     }
 }

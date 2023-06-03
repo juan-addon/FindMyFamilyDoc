@@ -43,7 +43,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "v1",
         Title = "Find My Family Doc",
-        Description = "Capstone 2023, FindMyFamilyDoc Application"
+        Description = "Capstone 2023, FindMyFamilyDoc Application (Sprint 1)."
     });
 });
 JwtAuthenticationHelper.ConfigureJwtAuthentication(builder.Services, builder.Configuration);
@@ -52,7 +52,7 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-/*if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -65,14 +65,14 @@ else
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
         options.RoutePrefix = string.Empty;
     });
-}*/
+}
 
-app.UseSwagger();
+/*app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
     options.RoutePrefix = string.Empty;
-});
+});*/
 
 app.UseMiddleware<ExceptionMiddleware>();
 
