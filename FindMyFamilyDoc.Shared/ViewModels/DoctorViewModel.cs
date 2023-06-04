@@ -12,8 +12,8 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string Phone { get; set; } = default!;
         [Required]
         public string ContactInformation { get; set; } = default!;
-        [Required]
-        public string Availability { get; set; } = default!;
+        //[Required]
+        //public string Availability { get; set; } = default!;
         [Required]
         public int WaitingTime { get; set; }
         [Required]

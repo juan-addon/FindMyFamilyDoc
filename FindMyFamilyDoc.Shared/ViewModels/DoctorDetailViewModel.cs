@@ -9,7 +9,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string Name { get; set; } = default!;
         public string Phone { get; set; } = default!;
         public string ContactInformation { get; set; } = default!;
-        public string Availability { get; set; } = default!;
+        //public string Availability { get; set; } = default!;
         public int WaitingTime { get; set; }
         public decimal Fees { get; set; }
         public byte[]? ProfilePicture { get; set; }

@@ -74,7 +74,7 @@ namespace FindMyFamilyDoc.Business.Services
                         Name = d.Name,
                         Phone = d.Phone,
                         ContactInformation = d.ContactInformation,
-                        Availability = d.Availability,
+                        //Availability = d.Availability,
                         WaitingTime = d.WaitingTime,
                         Fees = d.Fees,
                         ProfilePicture = d.ProfilePicture,
@@ -188,7 +188,7 @@ namespace FindMyFamilyDoc.Business.Services
                         Name = doctor.Name,
                         Phone = doctor.Phone,
                         ContactInformation = doctor.ContactInformation,
-                        Availability = doctor.Availability,
+                        //Availability = doctor.Availability,
                         WaitingTime = doctor.WaitingTime,
                         Fees = doctor.Fees,
                         ProfilePicture = doctor.ProfilePicture,
@@ -235,7 +235,6 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
-
         private async Task<string> ValidateDoctorCreation(DoctorViewModel model)
         {
             // Validate UserId
@@ -278,7 +277,7 @@ namespace FindMyFamilyDoc.Business.Services
                 Name = model.Name,
                 Phone = model.Phone,
                 ContactInformation = model.ContactInformation,
-                Availability = model.Availability,
+                Availability = "No Defined",
                 WaitingTime = model.WaitingTime,
                 Fees = model.Fees,
                 ProfilePicture = model.ProfilePicture ?? new byte[0],

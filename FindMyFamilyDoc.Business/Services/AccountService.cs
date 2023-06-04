@@ -49,7 +49,7 @@ namespace FindMyFamilyDoc.Business.Services
                 // Check if the role exists
                 if (await _roleManager.RoleExistsAsync(model.Role))
                 {
-                    var roleToAssign = model.Role == UserRoles.Doctor.ToString()
+                    var roleToAssign = model.Role.ToUpper() == UserRoles.Doctor.ToString().ToUpper()
 						? UserRoles.DoctorUnderReview.ToString()
 						: model.Role!.ToString();
 
