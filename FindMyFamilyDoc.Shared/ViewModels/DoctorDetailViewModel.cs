@@ -10,12 +10,14 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string Phone { get; set; } = default!;
         public string ContactInformation { get; set; } = default!;
         //public string Availability { get; set; } = default!;
-        public int WaitingTime { get; set; }
+        public string WaitingTime { get; set; }
         public decimal Fees { get; set; }
-        public byte[]? ProfilePicture { get; set; }
+        public string ProfilePicture { get; set; }
         public bool IsAcceptingNewPatients { get; set; } = false;
         public string UserId { get; set; } = default!;
+        public int CityId { get; set; } = default!;
         public string City { get; set; } = default!;
+        public int StateId { get; set; } = default!;
         public string State { get; set; } = default!;
         public string Street { get; set; } = default!;
         public string PostalCode { get; set; } = default!;

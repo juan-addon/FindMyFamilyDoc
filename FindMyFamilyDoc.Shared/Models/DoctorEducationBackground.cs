@@ -8,13 +8,16 @@ namespace FindMyFamilyDoc.Shared.Models
 		public int Id { get; set; }
 
 		[Required]
-		public string InstitutionName { get; set; } = default!;
+        [StringLength(200)]
+        public string InstitutionName { get; set; } = default!;
 
 		[Required]
-		public string Degree { get; set; } = default!;
+        [StringLength(200)]
+        public string Degree { get; set; } = default!;
 
 		[Required]
-		public string FieldOfStudy { get; set; } = default!;
+        [StringLength(200)]
+        public string FieldOfStudy { get; set; } = default!;
 
 		[Required]
 		public DateTime StartDate { get; set; }
@@ -25,5 +28,4 @@ namespace FindMyFamilyDoc.Shared.Models
 		public int DoctorId { get; set; }
 		public Doctor Doctor { get; set; }
 	}
-
 }

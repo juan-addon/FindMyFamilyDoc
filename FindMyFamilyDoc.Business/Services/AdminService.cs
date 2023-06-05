@@ -24,13 +24,13 @@ namespace FindMyFamilyDoc.Business.Services
             _roleManager = roleManager;
         }
 
-        public async Task<Result<dynamic>> ApproveDoctor(int id)
+        public async Task<Result<dynamic>> ApproveDoctor(string userId)
         {
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             try
             {
                 var queryable = await QueryHelper.GetDoctorsUnderReviewQueryAsync(_dbContext);
-                var doctor = await queryable.FirstOrDefaultAsync(m => m.Id == id);
+                var doctor = await queryable.FirstOrDefaultAsync(m => m.UserId == userId);
 
                 if (doctor == null)
                     return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");

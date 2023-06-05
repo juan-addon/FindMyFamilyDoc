@@ -7,7 +7,8 @@ namespace FindMyFamilyDoc.Shared.Models
 	public class Language : BaseEntity
 	{
 		[Required]
-		public string Name { get; set; } = default!;
+        [StringLength(100)]
+        public string Name { get; set; } = default!;
 
 		public ICollection<DoctorLanguage> DoctorLanguages { get; set; } = new List<DoctorLanguage>();
 	}

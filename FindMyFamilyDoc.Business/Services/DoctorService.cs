@@ -40,6 +40,7 @@ namespace FindMyFamilyDoc.Business.Services
                      .Select(d => new DoctorsUnderReviewViewModel
                      {
                          DoctorId = d.Id,
+                         DoctorUserId = d.UserId,
                          DoctorName = d.Name,
                          IsAcceptingNewPatients = d.IsAcceptingNewPatients,
                          Phone = d.Phone,
@@ -60,13 +61,13 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
-        public async Task<Result<DoctorDetailViewModel>> GetDoctorUnderReviewById(int id)
+        public async Task<Result<DoctorDetailViewModel>> GetDoctorUnderReviewByUserId(string DoctorUserId)
 		{
 			try
 			{
                 var queryable = await QueryHelper.GetDoctorsUnderReviewQueryAsync(_dbContext);
                 var doctor = await queryable
-                    .Where(m => m.Id == id)
+                    .Where(m => m.UserId == DoctorUserId)
                     .Select(d => new DoctorDetailViewModel
                     {
                         DoctorId = d.Id,
@@ -74,14 +75,15 @@ namespace FindMyFamilyDoc.Business.Services
                         Name = d.Name,
                         Phone = d.Phone,
                         ContactInformation = d.ContactInformation,
-                        //Availability = d.Availability,
                         WaitingTime = d.WaitingTime,
                         Fees = d.Fees,
                         ProfilePicture = d.ProfilePicture,
                         IsAcceptingNewPatients = d.IsAcceptingNewPatients,
                         UserId = d.UserId,
                         City = d.City.Name,
+                        CityId= d.CityId,
                         State = d.City.State.Name,
+                        StateId = d.City.StateId,
                         Street = d.Street,
                         PostalCode = d.PostalCode,
                         DoctorLanguages = d.DoctorLanguages.Select(dl => new DoctorDetailLanguageViewModel
@@ -116,7 +118,7 @@ namespace FindMyFamilyDoc.Business.Services
                 if (doctor != null)
 					return new Result<DoctorDetailViewModel>(doctor);
 				else
-					return new Result<DoctorDetailViewModel>(ApiErrorCode.DataNotFound.ToString(), $"Doctor with ID {id} not found.");
+					return new Result<DoctorDetailViewModel>(ApiErrorCode.DataNotFound.ToString(), $"Doctor with UserID {DoctorUserId} not found.");
 			}
 			catch (Exception ex)
 			{
@@ -191,7 +193,7 @@ namespace FindMyFamilyDoc.Business.Services
                         //Availability = doctor.Availability,
                         WaitingTime = doctor.WaitingTime,
                         Fees = doctor.Fees,
-                        ProfilePicture = doctor.ProfilePicture,
+                        ProfilePicture = doctor.ProfilePicture ?? string.Empty,
                         IsAcceptingNewPatients = doctor.IsAcceptingNewPatients,
                         UserId = doctor.UserId,
                         City = doctor.City.Name,
@@ -274,13 +276,15 @@ namespace FindMyFamilyDoc.Business.Services
             var doctor = new Doctor
             {
                 Title = model.Title,
-                Name = model.Name,
+                FirstName = model.FirstName,
+                MiddleName = model.MiddleName,
+                LastName = model.LastName,
                 Phone = model.Phone,
                 ContactInformation = model.ContactInformation,
                 Availability = "No Defined",
                 WaitingTime = model.WaitingTime,
                 Fees = model.Fees,
-                ProfilePicture = model.ProfilePicture ?? new byte[0],
+                ProfilePicture = model.ProfilePicture ?? string.Empty,
                 IsAcceptingNewPatients = model.IsAcceptingNewPatients,
                 UserId = model.UserId,
                 CityId = model.CityId,

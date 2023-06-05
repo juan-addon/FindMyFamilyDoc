@@ -38,9 +38,7 @@ namespace FindMyFamilyDoc.Business.Services
             var user = new User
             {
                 UserName = model.Email,
-                Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName
+                Email = model.Email
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -160,8 +158,6 @@ namespace FindMyFamilyDoc.Business.Services
             return (result, new LoginResultViewModel
             {
                 UserId = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
                 Email = user.Email!,
                 Token = token,
                 Role = role,

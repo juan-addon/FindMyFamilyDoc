@@ -1,6 +1,7 @@
 ﻿using FindMyFamilyDoc.API.Authentication;
 using FindMyFamilyDoc.Business.Interfaces;
 using FindMyFamilyDoc.Shared.Enums;
+using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,14 +19,6 @@ namespace FindMyFamilyDoc.API.Controllers
             _doctorService = doctorService;
         }
 
-        [HttpGet("pending-doctors/{id}")]
-        [RoleAuthorize(UserRoles.Admin)]
-        public async Task<IActionResult> GetDoctorUnderReviewById(int id)
-        {
-            var result = await _doctorService.GetDoctorUnderReviewById(id);
-            return Result(result);
-        }
-
         [HttpPost("create-doctor")]
         [RoleAuthorize(UserRoles.DoctorUnderReview)]
         public async Task<IActionResult> CreateDoctor([FromBody] DoctorViewModel model)
@@ -34,7 +27,15 @@ namespace FindMyFamilyDoc.API.Controllers
             return Result(result);
         }
 
-        [HttpPost("doctor-profile")]
+        [HttpGet("doctor-underreview-info")]
+        [RoleAuthorize(UserRoles.DoctorUnderReview)]
+        public async Task<IActionResult> GetDoctorUnderReviewInfo(DoctorUserIdViewModel model)
+        {
+            var result = await _doctorService.GetDoctorUnderReviewByUserId(model.UserId);
+            return Result(result);
+        }
+
+        [HttpGet("doctor-profile")]
         [RoleAuthorize(UserRoles.Doctor)]
         public async Task<IActionResult> GetDoctorProfile(DoctorUserIdViewModel model)
         {

@@ -6,19 +6,27 @@ namespace FindMyFamilyDoc.Shared.ViewModels
     {
         [Required]
         public string Title { get; set; } = default!;
+
         [Required]
-        public string Name { get; set; } = default!;
+        public string FirstName { get; set; } = default!;
+
+        [Required]
+        public string MiddleName { get; set; } = default!;
+
+        [Required]
+        public string LastName { get; set; } = default!;
+
         [Required]
         public string Phone { get; set; } = default!;
+
         [Required]
         public string ContactInformation { get; set; } = default!;
-        //[Required]
-        //public string Availability { get; set; } = default!;
+
         [Required]
-        public int WaitingTime { get; set; }
+        public string WaitingTime { get; set; } = default!;
         [Required]
         public decimal Fees { get; set; }
-        public byte[]? ProfilePicture { get; set; }
+        public string? ProfilePicture { get; set; }
         public bool IsAcceptingNewPatients { get; set; } = false;
         public string UserId { get; set; } = default!;
         [Required]
@@ -69,6 +77,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
     public class DoctorsUnderReviewViewModel
     {
         public int DoctorId { get; set; }
+        public string DoctorUserId { get; set; } = default!;
         public string DoctorName { get; set; } = default!;
         public bool IsAcceptingNewPatients { get; set; } = default!;
         public string Phone { get; set; } = default!;

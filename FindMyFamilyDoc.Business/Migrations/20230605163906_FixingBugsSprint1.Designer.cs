@@ -4,6 +4,7 @@ using FindMyFamilyDoc.Business;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FindMyFamilyDoc.Business.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230605163906_FixingBugsSprint1")]
+    partial class FixingBugsSprint1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,7 +59,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(138),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3662),
                             CreatedBy = "System",
                             Name = "Toronto",
                             StateId = 7,
@@ -65,7 +68,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(141),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3664),
                             CreatedBy = "System",
                             Name = "Ottawa",
                             StateId = 7,
@@ -74,7 +77,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(144),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3666),
                             CreatedBy = "System",
                             Name = "Mississauga",
                             StateId = 7,
@@ -83,7 +86,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(147),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3668),
                             CreatedBy = "System",
                             Name = "Brampton",
                             StateId = 7,
@@ -92,7 +95,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(150),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3669),
                             CreatedBy = "System",
                             Name = "Hamilton",
                             StateId = 7,
@@ -101,7 +104,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(152),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3671),
                             CreatedBy = "System",
                             Name = "London",
                             StateId = 7,
@@ -110,7 +113,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(155),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3673),
                             CreatedBy = "System",
                             Name = "Markham",
                             StateId = 7,
@@ -119,7 +122,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(158),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3674),
                             CreatedBy = "System",
                             Name = "Vaughan",
                             StateId = 7,
@@ -128,7 +131,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(160),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3676),
                             CreatedBy = "System",
                             Name = "Kitchener",
                             StateId = 7,
@@ -137,7 +140,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(163),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3678),
                             CreatedBy = "System",
                             Name = "Windsor",
                             StateId = 7,
@@ -146,7 +149,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(165),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3679),
                             CreatedBy = "System",
                             Name = "Richmond Hill",
                             StateId = 7,
@@ -155,7 +158,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(168),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3704),
                             CreatedBy = "System",
                             Name = "Oakville",
                             StateId = 7,
@@ -164,7 +167,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(171),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3706),
                             CreatedBy = "System",
                             Name = "Burlington",
                             StateId = 7,
@@ -173,7 +176,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 14,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(173),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3708),
                             CreatedBy = "System",
                             Name = "Greater Sudbury",
                             StateId = 7,
@@ -182,7 +185,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 15,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(176),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3710),
                             CreatedBy = "System",
                             Name = "Waterloo",
                             StateId = 7,
@@ -191,7 +194,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 16,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(178),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3712),
                             CreatedBy = "System",
                             Name = "Oshawa",
                             StateId = 7,
@@ -200,7 +203,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 17,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(181),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3713),
                             CreatedBy = "System",
                             Name = "Barrie",
                             StateId = 7,
@@ -209,7 +212,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 18,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(184),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3715),
                             CreatedBy = "System",
                             Name = "Kingston",
                             StateId = 7,
@@ -218,7 +221,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 19,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(186),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3716),
                             CreatedBy = "System",
                             Name = "Guelph",
                             StateId = 7,
@@ -227,7 +230,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 20,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(190),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3718),
                             CreatedBy = "System",
                             Name = "Thunder Bay",
                             StateId = 7,
@@ -236,7 +239,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 21,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(207),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3734),
                             CreatedBy = "System",
                             Name = "Calgary",
                             StateId = 1,
@@ -245,7 +248,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 22,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(210),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3737),
                             CreatedBy = "System",
                             Name = "Edmonton",
                             StateId = 1,
@@ -254,7 +257,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 23,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(212),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3738),
                             CreatedBy = "System",
                             Name = "Red Deer",
                             StateId = 1,
@@ -263,7 +266,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 24,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(215),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3740),
                             CreatedBy = "System",
                             Name = "Lethbridge",
                             StateId = 1,
@@ -272,7 +275,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 25,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(218),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3742),
                             CreatedBy = "System",
                             Name = "St. Albert",
                             StateId = 1,
@@ -281,7 +284,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 26,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(228),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3749),
                             CreatedBy = "System",
                             Name = "Montreal",
                             StateId = 9,
@@ -290,7 +293,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 27,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(231),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3751),
                             CreatedBy = "System",
                             Name = "Quebec City",
                             StateId = 9,
@@ -299,7 +302,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 28,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(523),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3753),
                             CreatedBy = "System",
                             Name = "Laval",
                             StateId = 9,
@@ -308,7 +311,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 29,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(526),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3755),
                             CreatedBy = "System",
                             Name = "Gatineau",
                             StateId = 9,
@@ -317,7 +320,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 30,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(529),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3756),
                             CreatedBy = "System",
                             Name = "Longueuil",
                             StateId = 9,
@@ -326,7 +329,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 31,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(572),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3764),
                             CreatedBy = "System",
                             Name = "Moncton",
                             StateId = 4,
@@ -335,7 +338,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 32,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(575),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3766),
                             CreatedBy = "System",
                             Name = "Saint John",
                             StateId = 4,
@@ -344,7 +347,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 33,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(697),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3768),
                             CreatedBy = "System",
                             Name = "Fredericton",
                             StateId = 4,
@@ -353,7 +356,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 34,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(699),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3770),
                             CreatedBy = "System",
                             Name = "Dieppe",
                             StateId = 4,
@@ -362,7 +365,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 35,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(702),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3771),
                             CreatedBy = "System",
                             Name = "Riverview",
                             StateId = 4,
@@ -371,7 +374,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 36,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(713),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3780),
                             CreatedBy = "System",
                             Name = "Winnipeg",
                             StateId = 3,
@@ -380,7 +383,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 37,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(716),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3782),
                             CreatedBy = "System",
                             Name = "Brandon",
                             StateId = 3,
@@ -389,7 +392,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 38,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(718),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3784),
                             CreatedBy = "System",
                             Name = "Steinbach",
                             StateId = 3,
@@ -398,7 +401,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 39,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(722),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3785),
                             CreatedBy = "System",
                             Name = "Thompson",
                             StateId = 3,
@@ -407,7 +410,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 40,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(725),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3787),
                             CreatedBy = "System",
                             Name = "Portage la Prairie",
                             StateId = 3,
@@ -416,7 +419,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 41,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(734),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3797),
                             CreatedBy = "System",
                             Name = "St. John's",
                             StateId = 5,
@@ -425,7 +428,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 42,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(737),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3799),
                             CreatedBy = "System",
                             Name = "Mount Pearl",
                             StateId = 5,
@@ -434,7 +437,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 43,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(740),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3800),
                             CreatedBy = "System",
                             Name = "Conception Bay South",
                             StateId = 5,
@@ -443,7 +446,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 44,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(743),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3802),
                             CreatedBy = "System",
                             Name = "Paradise",
                             StateId = 5,
@@ -452,7 +455,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 45,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(746),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3803),
                             CreatedBy = "System",
                             Name = "Corner Brook",
                             StateId = 5,
@@ -461,7 +464,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 46,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(755),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3811),
                             CreatedBy = "System",
                             Name = "Halifax",
                             StateId = 6,
@@ -470,7 +473,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 47,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(757),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3813),
                             CreatedBy = "System",
                             Name = "Sydney",
                             StateId = 6,
@@ -479,7 +482,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 48,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(760),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3814),
                             CreatedBy = "System",
                             Name = "Truro",
                             StateId = 6,
@@ -488,7 +491,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 49,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(763),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3816),
                             CreatedBy = "System",
                             Name = "New Glasgow",
                             StateId = 6,
@@ -497,7 +500,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 50,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(765),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3818),
                             CreatedBy = "System",
                             Name = "Glace Bay",
                             StateId = 6,
@@ -515,16 +518,14 @@ namespace FindMyFamilyDoc.Business.Migrations
 
                     b.Property<string>("Availability")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CityId")
                         .HasColumnType("int");
 
                     b.Property<string>("ContactInformation")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -537,43 +538,37 @@ namespace FindMyFamilyDoc.Business.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAcceptingNewPatients")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MiddleName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("ProfilePicture")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("ProfilePicture")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<float>("Rating")
                         .HasColumnType("real");
 
                     b.Property<string>("Street")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -588,8 +583,7 @@ namespace FindMyFamilyDoc.Business.Migrations
 
                     b.Property<string>("WaitingTime")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -611,8 +605,7 @@ namespace FindMyFamilyDoc.Business.Migrations
 
                     b.Property<string>("Degree")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
@@ -622,13 +615,11 @@ namespace FindMyFamilyDoc.Business.Migrations
 
                     b.Property<string>("FieldOfStudy")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InstitutionName")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -650,8 +641,7 @@ namespace FindMyFamilyDoc.Business.Migrations
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -762,8 +752,7 @@ namespace FindMyFamilyDoc.Business.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -776,7 +765,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(813),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3876),
                             CreatedBy = "System",
                             Name = "English",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -784,7 +773,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(816),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3879),
                             CreatedBy = "System",
                             Name = "Spanish",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -792,7 +781,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(819),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3880),
                             CreatedBy = "System",
                             Name = "French",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -800,7 +789,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(821),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3882),
                             CreatedBy = "System",
                             Name = "German",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -808,7 +797,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(824),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3883),
                             CreatedBy = "System",
                             Name = "Italian",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -816,7 +805,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(826),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3885),
                             CreatedBy = "System",
                             Name = "Dutch",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -824,7 +813,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(829),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3886),
                             CreatedBy = "System",
                             Name = "Russian",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -832,7 +821,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(833),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3888),
                             CreatedBy = "System",
                             Name = "Chinese",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -840,7 +829,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(835),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3889),
                             CreatedBy = "System",
                             Name = "Japanese",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -848,7 +837,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(838),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3891),
                             CreatedBy = "System",
                             Name = "Korean",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -856,7 +845,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(840),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3892),
                             CreatedBy = "System",
                             Name = "Portuguese",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -864,7 +853,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(843),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3894),
                             CreatedBy = "System",
                             Name = "Arabic",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -872,7 +861,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(845),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3895),
                             CreatedBy = "System",
                             Name = "Swedish",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -880,7 +869,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 14,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(851),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3900),
                             CreatedBy = "System",
                             Name = "Danish",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -888,7 +877,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 15,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(854),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3901),
                             CreatedBy = "System",
                             Name = "Finnish",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -896,7 +885,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 16,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(856),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3902),
                             CreatedBy = "System",
                             Name = "Norwegian",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -904,7 +893,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 17,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(859),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3904),
                             CreatedBy = "System",
                             Name = "Polish",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -912,7 +901,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 18,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(861),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3905),
                             CreatedBy = "System",
                             Name = "Hungarian",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -920,7 +909,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 19,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(864),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3907),
                             CreatedBy = "System",
                             Name = "Greek",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -928,7 +917,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 20,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(866),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3908),
                             CreatedBy = "System",
                             Name = "Hebrew",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -936,7 +925,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 21,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(869),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3910),
                             CreatedBy = "System",
                             Name = "Turkish",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -944,7 +933,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 22,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(871),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3911),
                             CreatedBy = "System",
                             Name = "Hindi",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -952,7 +941,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 23,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(874),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3913),
                             CreatedBy = "System",
                             Name = "Bengali",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -960,7 +949,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 24,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(876),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3914),
                             CreatedBy = "System",
                             Name = "Urdu",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -968,7 +957,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 25,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(879),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3916),
                             CreatedBy = "System",
                             Name = "Punjabi",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -991,8 +980,7 @@ namespace FindMyFamilyDoc.Business.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -1008,7 +996,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(785),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3833),
                             CreatedBy = "System",
                             Name = "Allergists/Immunologists",
                             Status = 0,
@@ -1017,7 +1005,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(788),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3835),
                             CreatedBy = "System",
                             Name = "Anesthesiologists",
                             Status = 0,
@@ -1026,7 +1014,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(790),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3837),
                             CreatedBy = "System",
                             Name = "Cardiologists",
                             Status = 0,
@@ -1035,7 +1023,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(793),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3839),
                             CreatedBy = "System",
                             Name = "Family and General Practitioners",
                             Status = 0,
@@ -1044,7 +1032,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(796),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3840),
                             CreatedBy = "System",
                             Name = "Neurologists",
                             Status = 0,
@@ -1068,8 +1056,7 @@ namespace FindMyFamilyDoc.Business.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -1082,7 +1069,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(75),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3567),
                             CreatedBy = "System",
                             Name = "Alberta",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1090,7 +1077,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(80),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3617),
                             CreatedBy = "System",
                             Name = "British Columbia",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1098,7 +1085,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(83),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3619),
                             CreatedBy = "System",
                             Name = "Manitoba",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1106,7 +1093,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(85),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3620),
                             CreatedBy = "System",
                             Name = "New Brunswick",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1114,7 +1101,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(88),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3622),
                             CreatedBy = "System",
                             Name = "Newfoundland and Labrador",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1122,7 +1109,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(91),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3623),
                             CreatedBy = "System",
                             Name = "Nova Scotia",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1130,7 +1117,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(93),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3625),
                             CreatedBy = "System",
                             Name = "Ontario",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1138,7 +1125,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(96),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3626),
                             CreatedBy = "System",
                             Name = "Prince Edward Island",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1146,7 +1133,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(99),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3628),
                             CreatedBy = "System",
                             Name = "Quebec",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1154,7 +1141,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(101),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3630),
                             CreatedBy = "System",
                             Name = "Saskatchewan",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1162,7 +1149,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(104),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3632),
                             CreatedBy = "System",
                             Name = "Northwest Territories",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1170,7 +1157,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(107),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3633),
                             CreatedBy = "System",
                             Name = "Nunavut",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1178,7 +1165,7 @@ namespace FindMyFamilyDoc.Business.Migrations
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2023, 6, 5, 12, 56, 13, 158, DateTimeKind.Local).AddTicks(110),
+                            CreatedAt = new DateTime(2023, 6, 5, 12, 39, 6, 82, DateTimeKind.Local).AddTicks(3635),
                             CreatedBy = "System",
                             Name = "Yukon",
                             UpdateAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1305,31 +1292,31 @@ namespace FindMyFamilyDoc.Business.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a2244d3c-9555-4051-a046-1301d90a38ba",
+                            Id = "9b965f50-8fd3-45c1-b01e-a4cc462a895a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "48365f29-fda0-4183-b084-69ffa35dafff",
+                            Id = "e1d6fdfe-b944-45dc-9799-2ec79e131211",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
-                            Id = "ce811bc8-eaa4-4434-abed-35a3b2b80d8e",
+                            Id = "f2e2f507-5504-4feb-955a-0198e9b2519e",
                             Name = "DoctorUnderReview",
                             NormalizedName = "DOCTORUNDERREVIEW"
                         },
                         new
                         {
-                            Id = "9233ec97-7b3b-4b91-a6c4-065930abc6ee",
+                            Id = "92b80963-25ad-4f15-8542-0decfb1462c9",
                             Name = "Patience",
                             NormalizedName = "PATIENCE"
                         },
                         new
                         {
-                            Id = "827f70ea-446b-4b66-b5bc-2debb30346ef",
+                            Id = "1c9af916-b267-4105-8b38-c2b00db0162f",
                             Name = "AdministractiveAssistant",
                             NormalizedName = "ADMINISTRACTIVEASSISTANT"
                         });

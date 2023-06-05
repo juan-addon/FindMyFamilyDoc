@@ -7,7 +7,8 @@ namespace FindMyFamilyDoc.Shared.Models
 	{
 
 		[Required]
-		public string CompanyName { get; set; } = default!;
+        [StringLength(200)]
+        public string CompanyName { get; set; } = default!;
 
 		[Required]
 		public string Description { get; set; } = default!;

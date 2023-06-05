@@ -30,8 +30,6 @@ namespace FindMyFamilyDoc.API.Controllers
 					{
 						User = new
                         {
-							model.FirstName,
-                            model.LastName,
                             model.Email,
                             model.Role
 						},
