@@ -61,7 +61,7 @@ namespace FindMyFamilyDoc.Business.Helpers
                     new Claim(ClaimTypes.Email, user.Email!),
                     new Claim(ClaimTypes.Role, role)
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(15),// change me later
+                Expires = DateTime.UtcNow.AddMinutes(20),// change me later
                 //Issuer = issuer,
                 //Audience = audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
