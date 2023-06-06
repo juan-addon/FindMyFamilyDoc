@@ -7,6 +7,9 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public int DoctorId { get; set; } 
         public string Title { get; set; } = default!;
         public string Name { get; set; } = default!;
+        public string FirstName { get; set; } = default!;
+        public string MiddleName { get; set; } = default!;
+        public string LastName { get; set; } = default!;
         public string Phone { get; set; } = default!;
         public string ContactInformation { get; set; } = default!;
         //public string Availability { get; set; } = default!;
