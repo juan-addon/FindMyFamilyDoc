@@ -4,21 +4,10 @@ using System.ComponentModel.DataAnnotations;
 namespace FindMyFamilyDoc.Shared.Models
 {
     [Index(nameof(UserId), IsUnique = true, Name = "Unique_UserId_Doctor")]
-    public class Doctor : BaseEntity
+    public class Doctor : PersonBaseEntity
     {
         [Required]
         public string Title { get; set; } = default!;
-
-        [Required]
-        [StringLength(50)]
-        public string FirstName { get; set; } = null!;
-
-        [StringLength(50)]
-        public string MiddleName { get; set; } = null!;
-
-        [Required]
-        [StringLength(50)]
-        public string LastName { get; set; } = null!;
 
         [Required]
         [StringLength(20)]
@@ -45,10 +34,8 @@ namespace FindMyFamilyDoc.Shared.Models
 
         [Required]
         public bool IsAcceptingNewPatients { get; set; }
-
-
         public string UserId { get; set; } = default!;
-        public User User { get; set; }
+        public User User { get; set; } = default!;
 
         // The city where the Doctor practices
         [Required]
@@ -65,12 +52,22 @@ namespace FindMyFamilyDoc.Shared.Models
 
         public string Name => $"{FirstName} {LastName}".Trim();
 
+        // 1:N relationship to Availability
         public ICollection<DoctorLanguage> DoctorLanguages { get; set; } = new List<DoctorLanguage>();
 
+        // 1:N relationship to Availability
         public ICollection<DoctorEducationBackground> DoctorEducationBackgrounds { get; set; } = new List<DoctorEducationBackground>();
 
+        // 1:N relationship to Availability
         public ICollection<DoctorExperience> Experiences { get; set; } = new List<DoctorExperience>();
 
+        // 1:N relationship to Availability
         public ICollection<DoctorSpecialty> DoctorSpecialties { get; set; } = new List<DoctorSpecialty>();
+
+        // 1:N relationship to Staff
+        public ICollection<DoctorStaff> DoctorStaffs { get; set; } = new List<DoctorStaff>();
+
+        // 1:N relationship to Availability
+        public ICollection<DoctorAvailability> DoctorAvailabilities { get; set; } = new List<DoctorAvailability>();
     }
 }
