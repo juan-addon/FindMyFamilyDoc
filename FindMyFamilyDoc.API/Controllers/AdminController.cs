@@ -35,11 +35,11 @@ namespace FindMyFamilyDoc.API.Controllers
             return Result(result);
         }
 
-        [HttpGet("pending-doctor-detail")]
+        [HttpGet("pending-doctor-detail/{userId}")]
         [RoleAuthorize(UserRoles.Admin)]
-        public async Task<IActionResult> GetDoctorUnderReviewById(DoctorUserIdViewModel model)
+        public async Task<IActionResult> GetDoctorUnderReviewById(string userId)
         {
-            var result = await _doctorService.GetDoctorUnderReviewByUserId(model.UserId);
+            var result = await _doctorService.GetDoctorUnderReviewByUserId(userId);
             return Result(result);
         }
     }
