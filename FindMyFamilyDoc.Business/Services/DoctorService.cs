@@ -113,7 +113,7 @@ namespace FindMyFamilyDoc.Business.Services
                         }).ToList(),
                         DoctorSpecialties = d.DoctorSpecialties.Select(ds => new DoctorDetailSpecialtyViewModel
                         {
-                            DoctorSpecialtyId = ds.SpecialtyId,
+                            SpecialtyId = ds.SpecialtyId,
                             SpecialtyName = ds.Specialty.Name // assuming the specialty name is available
                         }).ToList()
                     }).FirstOrDefaultAsync();
@@ -230,7 +230,7 @@ namespace FindMyFamilyDoc.Business.Services
                         }).ToList(),
                         DoctorSpecialties = doctor.DoctorSpecialties.Select(ds => new DoctorDetailSpecialtyViewModel
                         {
-                            DoctorSpecialtyId = ds.SpecialtyId,
+                            SpecialtyId = ds.SpecialtyId,
                             SpecialtyName = ds.Specialty.Name
                         }).ToList()
                     };

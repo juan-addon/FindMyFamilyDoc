@@ -58,7 +58,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
 
     public class DoctorDetailSpecialtyViewModel
     {
-        public int? DoctorSpecialtyId { get; set; } 
+        public int? SpecialtyId { get; set; } 
         public string? SpecialtyName { get; set; }
     }
 
