@@ -52,22 +52,25 @@ namespace FindMyFamilyDoc.Shared.Models
 
         public string Name => $"{FirstName} {LastName}".Trim();
 
-        // 1:N relationship to Availability
+        // 1:N relationship to DoctorLnaguages
         public ICollection<DoctorLanguage> DoctorLanguages { get; set; } = new List<DoctorLanguage>();
 
-        // 1:N relationship to Availability
+        // 1:N relationship to DoctorEducationBackgrounds
         public ICollection<DoctorEducationBackground> DoctorEducationBackgrounds { get; set; } = new List<DoctorEducationBackground>();
 
-        // 1:N relationship to Availability
+        // 1:N relationship to Experiences
         public ICollection<DoctorExperience> Experiences { get; set; } = new List<DoctorExperience>();
 
-        // 1:N relationship to Availability
+        // 1:N relationship to DoctorSpecialties
         public ICollection<DoctorSpecialty> DoctorSpecialties { get; set; } = new List<DoctorSpecialty>();
 
-        // 1:N relationship to Staff
+        // 1:N relationship to DoctorStaffs
         public ICollection<DoctorStaff> DoctorStaffs { get; set; } = new List<DoctorStaff>();
 
-        // 1:N relationship to Availability
+        // 1:N relationship to DoctorAvailabilities
         public ICollection<DoctorAvailability> DoctorAvailabilities { get; set; } = new List<DoctorAvailability>();
+
+        // 1:N relationship to Patients
+        public ICollection<PatientDoctor> Patients { get; set; } = new List<PatientDoctor>();
     }
 }
