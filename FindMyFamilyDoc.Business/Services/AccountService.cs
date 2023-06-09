@@ -165,30 +165,37 @@ namespace FindMyFamilyDoc.Business.Services
             });
         }
 
-		public async Task<Result<User>> LogoutAsync(string userId)
+		public async Task<Result<dynamic>> LogoutAsync(string userId)
 		{
 			try
 			{
 				if (string.IsNullOrEmpty(userId))
 			    {
-				    return new Result<User>(ApiErrorCode.ValidationError.ToString(), "User Id is missing.");
+				    return new Result<dynamic>(ApiErrorCode.ValidationError.ToString(), "User Id is missing.");
 			    }
 
 			    var user = await _userManager.FindByIdAsync(userId);
 			    if (user == null)
 			    {
-				    return new Result<User>(ApiErrorCode.UserNotFound.ToString(), $"No user found with Id {userId}.");
+				    return new Result<dynamic>(ApiErrorCode.UserNotFound.ToString(), $"No user found with Id {userId}.");
 			    }
 
 			    await _userManager.UpdateSecurityStampAsync(user);
 			    await _signInManager.SignOutAsync();
 			    await _userRefreshTokenService.InvalidateRefreshTokenAsync(user.Id);
 
-			    return new Result<User>(user);
-			}
-			catch (Exception ex)
+                return new Result<dynamic>(new
+                {
+                    User = new
+                    {
+                        user.Email,
+                    },
+                    Message = "You have been logged out."
+                });
+            }
+            catch (Exception ex)
 			{
-				return new Result<User>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+				return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
 			}
 		}
 
