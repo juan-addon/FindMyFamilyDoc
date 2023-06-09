@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FindMyFamilyDoc.Shared.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Shared.Models
@@ -18,8 +19,10 @@ namespace FindMyFamilyDoc.Shared.Models
         public string ContactInformation { get; set; } = default!;
 
         [Required]
-        [StringLength(100)]
-        public string Availability { get; set; } = default!;
+        public Gender Gender { get; set; } = default!;
+
+        [Required]
+        public DateTime DateOfBirth { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -71,6 +74,6 @@ namespace FindMyFamilyDoc.Shared.Models
         public ICollection<DoctorAvailability> DoctorAvailabilities { get; set; } = new List<DoctorAvailability>();
 
         // 1:N relationship to Patients
-        public ICollection<PatientDoctor> Patients { get; set; } = new List<PatientDoctor>();
+        public ICollection<DoctorPatient> Patients { get; set; } = new List<DoctorPatient>();
     }
 }
