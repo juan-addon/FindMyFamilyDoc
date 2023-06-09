@@ -1,11 +1,6 @@
 ﻿using FindMyFamilyDoc.Business.Interfaces;
 using FindMyFamilyDoc.Shared.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FindMyFamilyDoc.Business.Services
 {
@@ -52,11 +47,12 @@ namespace FindMyFamilyDoc.Business.Services
 
         public async Task InvalidateRefreshTokenAsync(string userId)
         {
-            // Invalidate the refresh token
-            var tokenEntry = await _context.UserRefreshTokens.SingleOrDefaultAsync(rt => rt.UserId == userId);
-            if (tokenEntry != null)
+            var tokenEntries = await _context.UserRefreshTokens.Where(rt => rt.UserId == userId).ToListAsync();
+
+            if (tokenEntries != null)
             {
-                _context.UserRefreshTokens.Remove(tokenEntry);
+                // Remove all refresh tokens
+                _context.UserRefreshTokens.RemoveRange(tokenEntries);
                 await _context.SaveChangesAsync();
             }
         }
