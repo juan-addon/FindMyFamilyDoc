@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using FindMyFamilyDoc.Business.Helpers;
+using System.ComponentModel;
 
 namespace FindMyFamilyDoc.Business
 {
@@ -13,7 +14,6 @@ namespace FindMyFamilyDoc.Business
         : base(options)
         {
         }
-
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<City> Cities { get; set; }
@@ -29,13 +29,28 @@ namespace FindMyFamilyDoc.Business
         {
             base.OnModelCreating(modelBuilder);
 
-			//modelBuilder.Entity<BaseEntity>().Property(b => b.CreatedAt).HasDefaultValueSql("GETDATE()");
+            //modelBuilder.Entity<BaseEntity>().Property(b => b.CreatedAt).HasDefaultValueSql("GETDATE()");
 
-			var roles = Enum.GetValues(typeof(UserRoles)).Cast<UserRoles>().Select(e => new IdentityRole
+            /*var roles = Enum.GetValues(typeof(UserRoles)).Cast<UserRoles>().Select(e => new IdentityRole
             {
                 Name = e.ToString(),
                 NormalizedName = e.ToString().ToUpper()
-            }).ToArray();
+            }).ToArray();*/
+
+            var roles = Enum.GetValues(typeof(UserRoles))
+            .Cast<UserRoles>()
+            .Select(e => {
+                var memInfo = typeof(UserRoles).GetMember(e.ToString());
+                var descriptionAttribute = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
+                var description = ((DescriptionAttribute)descriptionAttribute[0]).Description;
+
+                return new IdentityRole
+                {
+                    Name = e.ToString(),
+                    NormalizedName = description
+                };
+            })
+            .ToArray();
 
             modelBuilder.Entity<IdentityRole>().HasData(roles);
             ModelBuilderStateDataSeeder.Seed(modelBuilder);

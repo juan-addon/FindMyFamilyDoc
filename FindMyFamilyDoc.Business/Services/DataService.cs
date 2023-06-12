@@ -1,7 +1,6 @@
 ﻿using FindMyFamilyDoc.Business.Helpers;
 using FindMyFamilyDoc.Business.Interfaces;
 using FindMyFamilyDoc.Shared.Enums;
-using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,25 +18,28 @@ namespace FindMyFamilyDoc.Business.Services
 			_dbContext = dbContext;
 		}
 
-		public async Task<Result<IEnumerable<string>>> GetRoles()
+		public async Task<Result<IEnumerable<dynamic>>> GetRoles()
 		{
 			try
 			{
                 var roles = await _roleManager.Roles
 					.Where(r => r.Name != UserRoles.DoctorUnderReview.ToString())
-					.Select(r => r.Name)
+					.Select(r => new { 
+						r.Name, 
+						r.NormalizedName 
+					})
 					.ToListAsync();
 
                 if (roles == null)
 				{
-					return new Result<IEnumerable<string>>(ApiErrorCode.DataNotFound.ToString(), "Roles not found");
+					return new Result<IEnumerable<dynamic>>(ApiErrorCode.DataNotFound.ToString(), "Roles not found");
 				}
 
-				return new Result<IEnumerable<string>>(roles!);
+				return new Result<IEnumerable<dynamic>>(roles!);
 			}
 			catch (Exception ex)
 			{
-				return new Result<IEnumerable<string>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+				return new Result<IEnumerable<dynamic>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
 			}
 		}
 
@@ -193,5 +195,47 @@ namespace FindMyFamilyDoc.Business.Services
 				return new Result<IEnumerable<LanguageViewModel>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
 			}
 		}
-	}
+
+        public Result<IEnumerable<dynamic>> GetGenders()
+        {
+            try
+            {
+                var genders = Enum.GetValues(typeof(Gender))
+                    .Cast<Gender>()
+                    .Select(g => new
+                    {
+                        value = g.ToString(),
+                        description = g.GetDescription()
+                    })
+                    .ToList();
+
+                return new Result<IEnumerable<dynamic>>(genders);
+            }
+            catch (Exception ex)
+            {
+                return new Result<IEnumerable<dynamic>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+            }
+        }
+
+        public Result<IEnumerable<dynamic>> GetMaritalStatuses()
+        {
+            try
+            {
+                var maritalStatuses = Enum.GetValues(typeof(MaritalStatus))
+                    .Cast<MaritalStatus>()
+                    .Select(ms => new
+                    {
+                        value = ms.ToString(),
+                        description = ms.GetDescription()
+                    })
+                    .ToList();
+
+                return new Result<IEnumerable<dynamic>>(maritalStatuses);
+            }
+            catch (Exception ex)
+            {
+                return new Result<IEnumerable<dynamic>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+            }
+        }
+    }
 }

@@ -63,5 +63,19 @@ namespace FindMyFamilyDoc.API.Controllers
 			var result = await _dataService.GetLanguages();
 			return Result(result);
 		}
-	}
+
+        [HttpGet("genders")]
+        public IActionResult GetGenders()
+        {
+            var result = _dataService.GetGenders();
+            return Result(result);
+        }
+
+        [HttpGet("maritalstatuses")]
+        public IActionResult GetMaritalStatuses()
+        {
+            var result = _dataService.GetMaritalStatuses();
+            return Result(result);
+        }
+    }
 }
