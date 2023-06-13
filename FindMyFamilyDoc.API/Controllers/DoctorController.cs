@@ -12,10 +12,12 @@ namespace FindMyFamilyDoc.API.Controllers
     public class DoctorController : BaseController
     {
         private readonly IDoctorService _doctorService;
+        private readonly IDoctorStaffService _doctorStaffService;
 
-        public DoctorController(IDoctorService doctorService)
+        public DoctorController(IDoctorService doctorService, IDoctorStaffService doctorStaffService)
         {
             _doctorService = doctorService;
+            _doctorStaffService = doctorStaffService;
         }
 
         [HttpPost("create-doctor")]
@@ -39,6 +41,14 @@ namespace FindMyFamilyDoc.API.Controllers
         public async Task<IActionResult> GetDoctorProfile(string userId)
         {
             var result = await _doctorService.GetDoctorProfile(userId);
+            return Result(result);
+        }
+
+        [HttpPost("create-doctor-staff")]
+        [RoleAuthorize(UserRoles.Doctor)]
+        public async Task<IActionResult> CreateDoctorStaff([FromBody] StaffViewModel model)
+        {
+            var result = await _doctorStaffService.CreateStaff(model);
             return Result(result);
         }
     }

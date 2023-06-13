@@ -19,10 +19,12 @@ namespace FindMyFamilyDoc.Business.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IUserRefreshTokenService _userRefreshTokenService;
+        private readonly IEmailService _emailService;
 
         public AccountService(UserManager<User> userManager, SignInManager<User> signInManager,
-            DatabaseContext dbContext, RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration, IUserRefreshTokenService userRefreshTokenService)
+           DatabaseContext dbContext, RoleManager<IdentityRole> roleManager,
+           IConfiguration configuration, IUserRefreshTokenService userRefreshTokenService,
+           IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -30,6 +32,7 @@ namespace FindMyFamilyDoc.Business.Services
             _roleManager = roleManager;
             _configuration = configuration;
             _userRefreshTokenService = userRefreshTokenService;
+            _emailService = emailService;
         }
 
         public async Task<IdentityResult> CreateUserAsync(RegisterViewModel model)
@@ -120,7 +123,6 @@ namespace FindMyFamilyDoc.Business.Services
 			}
 		}
 
-
 		public async Task<(SignInResult, LoginResultViewModel?)> LoginAsync(LoginViewModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -162,6 +164,7 @@ namespace FindMyFamilyDoc.Business.Services
                 Token = token,
                 Role = role,
 				UserRefreshToken = userRefreshToken,
+                IsPasswordChangeRequired = user.IsPasswordChangeRequired
             });
         }
 
@@ -299,29 +302,51 @@ namespace FindMyFamilyDoc.Business.Services
 			}
 		}
 
-
-		private async Task SendPasswordResetToken(string email, string userId, string passwordResetToken)
-		{
-			var client = new SendGridClient("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");
-			var from = new EmailAddress("juan.addon@gmail.com", "Jose Adon");
-			var subject = "Reset your password";
-			var to = new EmailAddress(email);
-			var plainTextContent = $"User Id: {userId} Token: {passwordResetToken}";
-			var htmlContent = $"<strong> User Id: {userId}</strong> Token: {passwordResetToken}";
-			var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-			await client.SendEmailAsync(msg);
-		}
-
-		private async Task SendEmailConfirmationAsync(string email, string userId, string emailConfirmationToken)
+        public async Task<Result<dynamic>> ChangePasswordAsync(AccountChangePasswordInputModel model)
         {
-            var client = new SendGridClient("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");
-            var from = new EmailAddress("juan.addon@gmail.com", "Jose Adon");
-            var subject = "Confirm your email";
-            var to = new EmailAddress(email);
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "User not found.");
+            }
+
+            var isOldPasswordCorrect = await _userManager.CheckPasswordAsync(user, model.OldPassword);
+            if (!isOldPasswordCorrect)
+            {
+                return new Result<dynamic>(ApiErrorCode.BadRequest.ToString(), "Invalid old password.");
+            }
+
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+            if (!changePasswordResult.Succeeded)
+            {
+                return new Result<dynamic>(ApiErrorCode.BadRequest.ToString(), $"Failed to change password: {string.Join(", ", changePasswordResult.Errors.Select(x => x.Description))}");
+            }
+
+            // If the password was changed successfully, we can set the IsPasswordChangeRequired property to false
+            user.IsPasswordChangeRequired = false;
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+            {
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"Failed to update user: {string.Join(", ", updateResult.Errors.Select(x => x.Description))}");
+            }
+
+            return new Result<dynamic>("Password has been changed successfully.");
+        }
+
+        private async Task SendEmailConfirmationAsync(string email, string userId, string emailConfirmationToken)
+        {
             var plainTextContent = $"<strong> User Id: {userId}</strong> Token: {emailConfirmationToken}";
             var htmlContent = $"<strong> User Id: {userId}</strong> Token: {emailConfirmationToken}";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            await client.SendEmailAsync(msg);
+            await _emailService.SendEmailAsync(email, "Confirm your email", plainTextContent, htmlContent);
+        }
+
+        private async Task SendPasswordResetToken(string email, string userId, string passwordResetToken)
+        {
+            var plainTextContent = $"User Id: {userId} Token: {passwordResetToken}";
+            var htmlContent = $"<strong> User Id: {userId}</strong> Token: {passwordResetToken}";
+            await _emailService.SendEmailAsync(email, "Reset your password", plainTextContent, htmlContent);
         }
     }
 }

@@ -2,28 +2,20 @@
 
 namespace FindMyFamilyDoc.Shared.ViewModels
 {
-    public class DoctorDetailViewModel
+    public class DoctorDetailViewModel : BaseUserViewModel
     {
+        [Required]
+        public string UserId { get; set; } = default!;
         public int DoctorId { get; set; } 
         public string Title { get; set; } = default!;
         public string Name { get; set; } = default!;
-        public string FirstName { get; set; } = default!;
-        public string MiddleName { get; set; } = default!;
-        public string LastName { get; set; } = default!;
-        public string Phone { get; set; } = default!;
-        public string ContactInformation { get; set; } = default!;
-        public string WaitingTime { get; set; }
+        public string WaitingTime { get; set; } = default!;
         public decimal Fees { get; set; }
-        public string ProfilePicture { get; set; }
+        public string ProfilePicture { get; set; } = default!;
         public bool IsAcceptingNewPatients { get; set; } = false;
-        public string UserId { get; set; } = default!;
-        public int CityId { get; set; } = default!;
         public string CityName { get; set; } = default!;
         public int StateId { get; set; } = default!;
         public string State { get; set; } = default!;
-        public string Street { get; set; } = default!;
-        public string PostalCode { get; set; } = default!;
-
         public IList<DoctorDetailLanguageViewModel> DoctorLanguages { get; set; } = new List<DoctorDetailLanguageViewModel>();
         public IList<DoctorDetailEducationBackgroundViewModel> DoctorEducationBackgrounds { get; set; } = new List<DoctorDetailEducationBackgroundViewModel>();
         public IList<DoctorDetailExperienceViewModel> Experiences { get; set; } = new List<DoctorDetailExperienceViewModel>();

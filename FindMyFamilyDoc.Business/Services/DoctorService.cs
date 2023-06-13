@@ -3,8 +3,10 @@ using FindMyFamilyDoc.Business.Interfaces;
 using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FindMyFamilyDoc.Business.Services
 {
@@ -15,7 +17,7 @@ namespace FindMyFamilyDoc.Business.Services
         public DoctorService(DatabaseContext dbContext)
 		{
 			_dbContext = dbContext;
-		}
+        }
 
 		public async Task<Result<IEnumerable<dynamic>>> GetDoctors()
 		{
@@ -34,7 +36,6 @@ namespace FindMyFamilyDoc.Business.Services
         {
             try
             {
-
                 var queryable = await QueryHelper.GetDoctorsUnderReviewQueryAsync(_dbContext);
                 var doctorsUnderReview = await queryable
                      .Select(d => new DoctorsUnderReviewViewModel
@@ -68,61 +69,18 @@ namespace FindMyFamilyDoc.Business.Services
                 var queryable = await QueryHelper.GetDoctorsUnderReviewQueryAsync(_dbContext);
                 var doctor = await queryable
                     .Where(m => m.UserId == DoctorUserId)
-                    .Select(d => new DoctorDetailViewModel
-                    {
-                        DoctorId = d.Id,
-                        Title = d.Title,
-                        Name = d.Name,
-                        FirstName = d.FirstName,
-                        LastName = d.LastName,
-                        MiddleName = d.MiddleName,
-                        Phone = d.Phone,
-                        ContactInformation = d.ContactInformation,
-                        WaitingTime = d.WaitingTime,
-                        Fees = d.Fees,
-                        ProfilePicture = d.ProfilePicture,
-                        IsAcceptingNewPatients = d.IsAcceptingNewPatients,
-                        UserId = d.UserId,
-                        CityName = d.City.Name,
-                        CityId= d.CityId,
-                        State = d.City.State.Name,
-                        StateId = d.City.StateId,
-                        Street = d.Street,
-                        PostalCode = d.PostalCode,
-                        DoctorLanguages = d.DoctorLanguages.Select(dl => new DoctorDetailLanguageViewModel
-                        {
-                            LanguageId = dl.LanguageId,
-                            LanguageName = dl.Language.Name // assuming the language name is available
-                        }).ToList(),
-                        DoctorEducationBackgrounds = d.DoctorEducationBackgrounds.Select(eb => new DoctorDetailEducationBackgroundViewModel
-                        {
-                            DoctorEducationBackgroundId = eb.Id,
-                            InstitutionName = eb.InstitutionName,
-                            Degree = eb.Degree,
-                            FieldOfStudy = eb.FieldOfStudy,
-                            StartDate = eb.StartDate,
-                            EndDate = eb.EndDate
-                        }).ToList(),
-                        Experiences = d.Experiences.Select(e => new DoctorDetailExperienceViewModel
-                        {
-                            DoctorExperienceId = e.Id,
-                            CompanyName = e.CompanyName,
-                            Description = e.Description,
-                            StartDate = e.StartDate,
-                            EndDate = e.EndDate
-                        }).ToList(),
-                        DoctorSpecialties = d.DoctorSpecialties.Select(ds => new DoctorDetailSpecialtyViewModel
-                        {
-                            SpecialtyId = ds.SpecialtyId,
-                            SpecialtyName = ds.Specialty.Name // assuming the specialty name is available
-                        }).ToList()
-                    }).FirstOrDefaultAsync();
+                    .Include(m => m.DoctorLanguages).ThenInclude(m => m.Language)
+                    .Include(m => m.DoctorEducationBackgrounds)
+                    .Include(m => m.Experiences)
+                    .Include(m => m.DoctorSpecialties).ThenInclude(m => m.Specialty)
+                    .Include(m => m.City).ThenInclude(m => m.State)
+                    .FirstOrDefaultAsync();
 
                 if (doctor != null)
-					return new Result<DoctorDetailViewModel>(doctor);
-				else
-					return new Result<DoctorDetailViewModel>(ApiErrorCode.DataNotFound.ToString(), $"Doctor with UserID {DoctorUserId} not found.");
-			}
+                    return new Result<DoctorDetailViewModel>(MapDoctorToDoctorDetailViewModel(doctor));
+                else
+                    return new Result<DoctorDetailViewModel>(ApiErrorCode.DataNotFound.ToString(), $"Doctor with UserID {DoctorUserId} not found.");
+            }
 			catch (Exception ex)
 			{
 				return new Result<DoctorDetailViewModel>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving the doctor: {ex.Message}");
@@ -186,55 +144,7 @@ namespace FindMyFamilyDoc.Business.Services
                     return new Result<DoctorDetailViewModel>(ApiErrorCode.NotFound.ToString(), "Doctor profile not found.");
                 }
 
-                var doctorDetailViewModel = new DoctorDetailViewModel
-                    {
-                        DoctorId = doctor.Id,
-                        Title = doctor.Title,
-                        Name = doctor.Name,
-                        FirstName = doctor.FirstName,
-                        LastName = doctor.LastName,
-                        MiddleName = doctor.MiddleName,
-                        Phone = doctor.Phone,
-                        ContactInformation = doctor.ContactInformation,
-                        WaitingTime = doctor.WaitingTime,
-                        Fees = doctor.Fees,
-                        ProfilePicture = doctor.ProfilePicture ?? string.Empty,
-                        IsAcceptingNewPatients = doctor.IsAcceptingNewPatients,
-                        UserId = doctor.UserId,
-                        CityId = doctor.CityId,
-                        CityName = doctor.City.Name,
-                        StateId = doctor.City.StateId,
-                        State = doctor.City.State.Name,
-                        Street = doctor.Street,
-                        PostalCode = doctor.PostalCode,
-                        DoctorLanguages = doctor.DoctorLanguages.Select(dl => new DoctorDetailLanguageViewModel
-                        {
-                            LanguageId = dl.LanguageId,
-                            LanguageName = dl.Language.Name // assuming the language name is available
-                        }).ToList(),
-                        DoctorEducationBackgrounds = doctor.DoctorEducationBackgrounds.Select(eb => new DoctorDetailEducationBackgroundViewModel
-                        {
-                            DoctorEducationBackgroundId = eb.Id,
-                            InstitutionName = eb.InstitutionName,
-                            Degree = eb.Degree,
-                            FieldOfStudy = eb.FieldOfStudy,
-                            StartDate = eb.StartDate,
-                            EndDate = eb.EndDate
-                        }).ToList(),
-                        Experiences = doctor.Experiences.Select(e => new DoctorDetailExperienceViewModel
-                        {
-                            DoctorExperienceId = e.Id,
-                            CompanyName = e.CompanyName,
-                            Description = e.Description,
-                            StartDate = e.StartDate,
-                            EndDate = e.EndDate
-                        }).ToList(),
-                        DoctorSpecialties = doctor.DoctorSpecialties.Select(ds => new DoctorDetailSpecialtyViewModel
-                        {
-                            SpecialtyId = ds.SpecialtyId,
-                            SpecialtyName = ds.Specialty.Name
-                        }).ToList()
-                    };
+                var doctorDetailViewModel = MapDoctorToDoctorDetailViewModel(doctor);
 
                 return new Result<DoctorDetailViewModel>(doctorDetailViewModel);
             }
@@ -288,7 +198,6 @@ namespace FindMyFamilyDoc.Business.Services
                 LastName = model.LastName,
                 Phone = model.Phone,
                 ContactInformation = model.ContactInformation,
-                Availability = "No Defined",
                 WaitingTime = model.WaitingTime,
                 Fees = model.Fees,
                 ProfilePicture = model.ProfilePicture ?? string.Empty,
@@ -296,7 +205,11 @@ namespace FindMyFamilyDoc.Business.Services
                 UserId = model.UserId,
                 CityId = model.CityId,
                 Street = model.Street,
-                PostalCode = model.PostalCode
+                PostalCode = model.PostalCode,
+                DateOfBirth = model.DateOfBirth,
+                Gender = Enum.TryParse<Gender>(model.Gender, true, out var genderValue)
+                ? genderValue
+                : throw new ArgumentException($"Invalid gender value: {model.Gender}")
             };
 
             // Add DoctorLanguages
@@ -331,6 +244,61 @@ namespace FindMyFamilyDoc.Business.Services
             }).ToList();
 
             return doctor;
+        }
+
+        private DoctorDetailViewModel MapDoctorToDoctorDetailViewModel(Doctor doctor)
+        {
+            return new DoctorDetailViewModel
+            {
+                DoctorId = doctor.Id,
+                Title = doctor.Title,
+                Name = doctor.Name,
+                FirstName = doctor.FirstName,
+                LastName = doctor.LastName,
+                MiddleName = doctor.MiddleName,
+                Phone = doctor.Phone,
+                ContactInformation = doctor.ContactInformation,
+                WaitingTime = doctor.WaitingTime,
+                Fees = doctor.Fees,
+                ProfilePicture = doctor.ProfilePicture,
+                IsAcceptingNewPatients = doctor.IsAcceptingNewPatients,
+                UserId = doctor.UserId,
+                CityName = doctor.City.Name,
+                CityId = doctor.CityId,
+                State = doctor.City.State.Name,
+                StateId = doctor.City.StateId,
+                Street = doctor.Street,
+                PostalCode = doctor.PostalCode,
+                Gender = doctor.Gender.ToString(),
+                DateOfBirth = doctor.DateOfBirth,
+                DoctorLanguages = doctor.DoctorLanguages.Select(dl => new DoctorDetailLanguageViewModel
+                {
+                    LanguageId = dl.LanguageId,
+                    LanguageName = dl.Language.Name
+                }).ToList(),
+                DoctorEducationBackgrounds = doctor.DoctorEducationBackgrounds.Select(eb => new DoctorDetailEducationBackgroundViewModel
+                {
+                    DoctorEducationBackgroundId = eb.Id,
+                    InstitutionName = eb.InstitutionName,
+                    Degree = eb.Degree,
+                    FieldOfStudy = eb.FieldOfStudy,
+                    StartDate = eb.StartDate,
+                    EndDate = eb.EndDate
+                }).ToList(),
+                Experiences = doctor.Experiences.Select(e => new DoctorDetailExperienceViewModel
+                {
+                    DoctorExperienceId = e.Id,
+                    CompanyName = e.CompanyName,
+                    Description = e.Description,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate
+                }).ToList(),
+                DoctorSpecialties = doctor.DoctorSpecialties.Select(ds => new DoctorDetailSpecialtyViewModel
+                {
+                    SpecialtyId = ds.SpecialtyId,
+                    SpecialtyName = ds.Specialty.Name
+                }).ToList()
+            };
         }
     }
 }

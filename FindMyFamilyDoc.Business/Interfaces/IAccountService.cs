@@ -14,5 +14,7 @@ namespace FindMyFamilyDoc.Business.Interfaces
 		Task<Result<string>> ForgotPasswordAsync(ForgotPasswordViewModel model);
         Task<Result<string>> ConfirmResetPasswordTokenAsync(string userId, string token);
         Task<Result<string>> ResetPasswordAsync(ResetPasswordViewModel model);
-	}
+        Task<Result<dynamic>> ChangePasswordAsync(AccountChangePasswordInputModel model);
+
+    }
 }

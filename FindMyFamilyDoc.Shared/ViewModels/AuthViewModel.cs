@@ -9,6 +9,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
 		public string Role { get; set; } = default!;
 		public string Token { get; set; } = default!;
         public string UserRefreshToken { get; set; } = default!;
+        public bool IsPasswordChangeRequired { get; set; } = false;
     }
 
     public class RefreshTokenViewModel
@@ -51,7 +52,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         [Required(ErrorMessage = "Password is required.")]
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
-        public string? OldPassword { get; set; }
+        public string OldPassword { get; set; } = default!;
     }
 
     public class UserAccountConfirmationViewModel
@@ -62,16 +63,19 @@ namespace FindMyFamilyDoc.Shared.ViewModels
 
     public class AccountSetPasswordInputModel
     {
+        [Required]
+        public string UserId { get; set; } = default!;
+
         [Required(ErrorMessage = "Password is required.")]
         [MinLength(8, ErrorMessage = "Password must be at least 8 characters."), StringLength(100, ErrorMessage = "{0} cannot exceed {1} characters.")]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
-        public string? NewPassword { get; set; }
+        public string NewPassword { get; set; } = default!;
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm new password")]
         [Compare(nameof(NewPassword), ErrorMessage = "New password and confirmation password do not match.")]
-        public string? ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; } = default!;
     }
 
 	public class ForgotPasswordViewModel

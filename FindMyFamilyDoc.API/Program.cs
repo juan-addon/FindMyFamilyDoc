@@ -34,6 +34,9 @@ builder.Services.AddScoped<IDataService, DataService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserRefreshTokenService, UserRefreshTokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IDoctorStaffService, DoctorStaffService>();
+
 builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 builder.Services.AddIdentity<User, IdentityRole>()

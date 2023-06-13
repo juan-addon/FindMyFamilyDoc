@@ -135,5 +135,13 @@ namespace FindMyFamilyDoc.API.Controllers
 			var result = await _accountService.RefreshTokenAsync(model);
 			return Result(result);
 		}
+
+        [HttpPut("change-password")]
+        [ServiceFilter(typeof(ApiKeyAuthFilter))]
+        public async Task<IActionResult> ResetPassword(AccountChangePasswordInputModel model)
+        {
+            var result = await _accountService.ChangePasswordAsync(model);
+            return Result(result);
+        }
     }
 }

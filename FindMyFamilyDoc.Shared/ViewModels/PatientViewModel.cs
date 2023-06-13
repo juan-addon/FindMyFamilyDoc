@@ -1,12 +1,10 @@
 ﻿using FindMyFamilyDoc.Shared.Enums;
-using System.ComponentModel.DataAnnotations;
 
-namespace FindMyFamilyDoc.Shared.Models
+namespace FindMyFamilyDoc.Shared.ViewModels
 {
-    public class Patient : PersonBaseEntity
+    public class PatientViewModel: BaseUserViewModel
     {
         public string EmergencyContact { get; set; } = default!;
-        public string CurrentMedications { get; set; } = default!;
         public MaritalStatus MaritalStatus { get; set; }
         public string Occupation { get; set; } = default!;
     }
