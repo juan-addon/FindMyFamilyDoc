@@ -10,10 +10,6 @@ namespace FindMyFamilyDoc.Shared.Models
         public string Title { get; set; } = default!;
 
         [Required]
-        [StringLength(100)]
-        public string Availability { get; set; } = default!;
-
-        [Required]
         [StringLength(50)]
         public string WaitingTime { get; set; } = default!;
 

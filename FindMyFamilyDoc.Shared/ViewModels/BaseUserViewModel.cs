@@ -22,5 +22,15 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string Street { get; set; } = default!;
         [Required]
         public string PostalCode { get; set; } = default!;
+
+        public int Age
+        {
+            get
+            {
+                var age = DateTime.Today.Year - DateOfBirth.Year;
+                if (DateOfBirth.Date > DateTime.Today.AddYears(-age)) age--;
+                return age;
+            }
+        }
     }
 }

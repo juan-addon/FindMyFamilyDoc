@@ -3,10 +3,9 @@ using FindMyFamilyDoc.Business.Interfaces;
 using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Business.Services
 {
@@ -121,6 +120,11 @@ namespace FindMyFamilyDoc.Business.Services
                 await transaction.RollbackAsync();
                 return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"A database error occurred while creating the doctor: {ex.Message}");
             }
+            catch (ValidationException ex)
+            {
+                await transaction.RollbackAsync();
+                return new Result<dynamic>(ApiErrorCode.ValidationError.ToString(), ex.Message);
+            }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
@@ -209,7 +213,7 @@ namespace FindMyFamilyDoc.Business.Services
                 DateOfBirth = model.DateOfBirth,
                 Gender = Enum.TryParse<Gender>(model.Gender, true, out var genderValue)
                 ? genderValue
-                : throw new ArgumentException($"Invalid gender value: {model.Gender}")
+                : throw new ValidationException($"Invalid gender value: {model.Gender}")
             };
 
             // Add DoctorLanguages

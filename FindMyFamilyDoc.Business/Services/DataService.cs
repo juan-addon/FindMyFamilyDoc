@@ -18,32 +18,33 @@ namespace FindMyFamilyDoc.Business.Services
 			_dbContext = dbContext;
 		}
 
-		public async Task<Result<IEnumerable<dynamic>>> GetRoles()
-		{
-			try
-			{
+        public async Task<Result<IEnumerable<dynamic>>> GetRoles()
+        {
+            try
+            {
                 var roles = await _roleManager.Roles
-					.Where(r => r.Name != UserRoles.DoctorUnderReview.ToString())
-					.Select(r => new { 
-						r.Name, 
-						r.NormalizedName 
-					})
-					.ToListAsync();
+                    .Where(r => r.Name != UserRoles.DoctorUnderReview.ToString())
+                    .Select(r => new
+                    {
+                        RoleName = r.Name,
+                        RoleDescription = EnumExtensions.GetDescription(Enum.Parse<UserRoles>(r.Name!))
+                    })
+                    .ToListAsync();
 
-                if (roles == null)
-				{
-					return new Result<IEnumerable<dynamic>>(ApiErrorCode.DataNotFound.ToString(), "Roles not found");
-				}
+                if (!roles.Any())
+                {
+                    return new Result<IEnumerable<dynamic>>(ApiErrorCode.DataNotFound.ToString(), "Roles not found");
+                }
 
-				return new Result<IEnumerable<dynamic>>(roles!);
-			}
-			catch (Exception ex)
-			{
-				return new Result<IEnumerable<dynamic>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
-			}
-		}
+                return new Result<IEnumerable<dynamic>>(roles!);
+            }
+            catch (Exception ex)
+            {
+                return new Result<IEnumerable<dynamic>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+            }
+        }
 
-		public async Task<Result<IEnumerable<StateViewModel>>> GetStates()
+        public async Task<Result<IEnumerable<StateViewModel>>> GetStates()
 		{
 			try
 			{

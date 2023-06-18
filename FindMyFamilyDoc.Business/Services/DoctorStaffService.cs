@@ -11,9 +11,9 @@ namespace FindMyFamilyDoc.Business.Services
     public class DoctorStaffService : IDoctorStaffService
     {
         private readonly DatabaseContext _dbContext;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public DoctorStaffService(DatabaseContext dbContext, UserManager<IdentityUser> userManager)
+        public DoctorStaffService(DatabaseContext dbContext, UserManager<User> userManager)
         {
             _dbContext = dbContext;
             _userManager = userManager;

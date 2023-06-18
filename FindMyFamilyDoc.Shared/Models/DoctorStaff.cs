@@ -1,10 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FindMyFamilyDoc.Shared.Models
 {
     public class DoctorStaff : PersonBaseEntity
     {
         [Required]
+        [ForeignKey("Doctor")]
         public int DoctorId { get; set; } = default!;
 
         public DateTime DateOfHire { get; set; }
@@ -16,6 +19,7 @@ namespace FindMyFamilyDoc.Shared.Models
         public bool IsActive { get; set; } = true;
 
         // Navigation property
+        [DeleteBehavior(DeleteBehavior.Restrict)]
         public Doctor Doctor { get; set; } = default!;
     }
 }

@@ -31,15 +31,21 @@ namespace FindMyFamilyDoc.Business
         {
             base.OnModelCreating(modelBuilder);
 
+            //modelBuilder.Entity<Doctor>()
+            //   .HasMany(d => d.DoctorStaffs)
+            //   .WithOne(s => s.Doctor)
+            //   .HasForeignKey(s => s.DoctorId)
+            //   .OnDelete(DeleteBehavior.Restrict);
+
             //modelBuilder.Entity<BaseEntity>().Property(b => b.CreatedAt).HasDefaultValueSql("GETDATE()");
 
-            /*var roles = Enum.GetValues(typeof(UserRoles)).Cast<UserRoles>().Select(e => new IdentityRole
+            var roles = Enum.GetValues(typeof(UserRoles)).Cast<UserRoles>().Select(e => new IdentityRole
             {
                 Name = e.ToString(),
                 NormalizedName = e.ToString().ToUpper()
-            }).ToArray();*/
+            }).ToArray();
 
-            var roles = Enum.GetValues(typeof(UserRoles))
+            /*var roles = Enum.GetValues(typeof(UserRoles))
             .Cast<UserRoles>()
             .Select(e => {
                 var memInfo = typeof(UserRoles).GetMember(e.ToString());
@@ -52,7 +58,7 @@ namespace FindMyFamilyDoc.Business
                     NormalizedName = description
                 };
             })
-            .ToArray();
+            .ToArray();*/
 
             modelBuilder.Entity<IdentityRole>().HasData(roles);
             ModelBuilderStateDataSeeder.Seed(modelBuilder);
