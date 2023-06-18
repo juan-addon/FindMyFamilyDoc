@@ -51,5 +51,13 @@ namespace FindMyFamilyDoc.API.Controllers
             var result = await _doctorStaffService.CreateStaff(model);
             return Result(result);
         }
+
+        [HttpGet("doctor-staff/{doctorUserId}")]
+        [RoleAuthorize(UserRoles.Doctor)]
+        public async Task<IActionResult> GetStaffByDoctorId(string doctorUserId)
+        {
+            var result = await _doctorStaffService.GetStaffByDoctorId(doctorUserId);
+            return Result(result);
+        }
     }
 }
