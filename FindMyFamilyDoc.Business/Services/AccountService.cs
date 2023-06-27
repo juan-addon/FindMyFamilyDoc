@@ -5,8 +5,6 @@ using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 using System.Web;
 
 namespace FindMyFamilyDoc.Business.Services
@@ -302,25 +300,25 @@ namespace FindMyFamilyDoc.Business.Services
 			}
 		}
 
-        public async Task<Result<dynamic>> ChangePasswordAsync(AccountChangePasswordInputModel model)
+        public async Task<Result<string>> ChangePasswordAsync(AccountChangePasswordInputModel model)
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
             if (user == null)
             {
-                return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "User not found.");
+                return new Result<string>(ApiErrorCode.NotFound.ToString(), "User not found.");
             }
 
             var isOldPasswordCorrect = await _userManager.CheckPasswordAsync(user, model.OldPassword);
             if (!isOldPasswordCorrect)
             {
-                return new Result<dynamic>(ApiErrorCode.BadRequest.ToString(), "Invalid old password.");
+                return new Result<string>(ApiErrorCode.BadRequest.ToString(), "Invalid old password.");
             }
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
 
             if (!changePasswordResult.Succeeded)
             {
-                return new Result<dynamic>(ApiErrorCode.BadRequest.ToString(), $"Failed to change password: {string.Join(", ", changePasswordResult.Errors.Select(x => x.Description))}");
+                return new Result<string>(ApiErrorCode.BadRequest.ToString(), $"Failed to change password: {string.Join(", ", changePasswordResult.Errors.Select(x => x.Description))}");
             }
 
             // If the password was changed successfully, we can set the IsPasswordChangeRequired property to false
@@ -329,10 +327,10 @@ namespace FindMyFamilyDoc.Business.Services
 
             if (!updateResult.Succeeded)
             {
-                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"Failed to update user: {string.Join(", ", updateResult.Errors.Select(x => x.Description))}");
+                return new Result<string>(ApiErrorCode.InternalServerError.ToString(), $"Failed to update user: {string.Join(", ", updateResult.Errors.Select(x => x.Description))}");
             }
 
-            return new Result<dynamic>("Password has been changed successfully.");
+            return new Result<string>("Password has been changed successfully.");
         }
 
         private async Task SendEmailConfirmationAsync(string email, string userId, string emailConfirmationToken)
