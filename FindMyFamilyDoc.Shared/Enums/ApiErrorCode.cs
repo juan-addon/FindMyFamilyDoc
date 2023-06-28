@@ -18,9 +18,10 @@
 		UsernameAlreadyRegistered,
 		UserNotActivated,
 		UserLocked,
+        Conflict,
 
-		// Authentication errors
-		InvalidCredentials,
+        // Authentication errors
+        InvalidCredentials,
 		SessionExpired,
 		TokenInvalid,
 		TokenExpired,
