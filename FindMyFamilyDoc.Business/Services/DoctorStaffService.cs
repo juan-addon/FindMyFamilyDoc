@@ -191,7 +191,8 @@ namespace FindMyFamilyDoc.Business.Services
                 Email = model.Email,
                 PhoneNumber = model.Phone,
                 EmailConfirmed = true,
-                IsPasswordChangeRequired = true
+                IsPasswordChangeRequired = true,
+                IsProfileComplete = true,
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);

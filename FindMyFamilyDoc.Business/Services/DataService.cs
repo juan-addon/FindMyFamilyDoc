@@ -238,5 +238,25 @@ namespace FindMyFamilyDoc.Business.Services
                 return new Result<IEnumerable<dynamic>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
             }
         }
+
+        public Result<IEnumerable<dynamic>> GetWeekDays()
+        {
+            try
+            {
+                var weekDays = Enum.GetValues(typeof(WeekDay))
+                    .Cast<WeekDay>()
+                    .Select(ms => new
+                    {
+                        value = ms.ToString()
+                    })
+                    .ToList();
+
+                return new Result<IEnumerable<dynamic>>(weekDays);
+            }
+            catch (Exception ex)
+            {
+                return new Result<IEnumerable<dynamic>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

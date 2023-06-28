@@ -77,5 +77,12 @@ namespace FindMyFamilyDoc.API.Controllers
             var result = _dataService.GetMaritalStatuses();
             return Result(result);
         }
+
+        [HttpGet("weekdays")]
+        public IActionResult GetWeekDays()
+        {
+            var result = _dataService.GetWeekDays();
+            return Result(result);
+        }
     }
 }

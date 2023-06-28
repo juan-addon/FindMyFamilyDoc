@@ -162,7 +162,8 @@ namespace FindMyFamilyDoc.Business.Services
                 Token = token,
                 Role = role,
 				UserRefreshToken = userRefreshToken,
-                IsPasswordChangeRequired = user.IsPasswordChangeRequired
+                IsPasswordChangeRequired = user.IsPasswordChangeRequired,
+                IsProfileComplete = user.IsProfileComplete
             });
         }
 

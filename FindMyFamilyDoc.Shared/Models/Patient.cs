@@ -1,5 +1,4 @@
 ﻿using FindMyFamilyDoc.Shared.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Shared.Models
 {

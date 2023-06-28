@@ -10,6 +10,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
 		public string Token { get; set; } = default!;
         public string UserRefreshToken { get; set; } = default!;
         public bool IsPasswordChangeRequired { get; set; } = false;
+        public bool IsProfileComplete { get; set; } = false;
     }
 
     public class RefreshTokenViewModel

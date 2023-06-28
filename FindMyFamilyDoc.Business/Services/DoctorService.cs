@@ -98,8 +98,14 @@ namespace FindMyFamilyDoc.Business.Services
 
                 var doctor = MapViewModelToDoctor(model);
 
-                // Add new doctor to context and save
-                _dbContext.Doctors.Add(doctor);
+                var user = await _dbContext.Users.FindAsync(doctor.UserId);
+                if (user != null)
+                {
+                    user.IsProfileComplete = true;
+                    _dbContext.Entry(user).State = EntityState.Modified;
+                }
+
+                _dbContext.Doctors.Add(doctor); // Add new doctor to context and save
                 await _dbContext.SaveChangesAsync();
 
                 await transaction.CommitAsync();

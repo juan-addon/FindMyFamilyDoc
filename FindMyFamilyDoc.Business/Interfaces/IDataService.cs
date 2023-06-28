@@ -14,5 +14,6 @@ namespace FindMyFamilyDoc.Business.Interfaces
 		Task<Result<IEnumerable<LanguageViewModel>>> GetLanguages();
         Result<IEnumerable<dynamic>> GetGenders();
         Result<IEnumerable<dynamic>> GetMaritalStatuses();
+		Result<IEnumerable<dynamic>> GetWeekDays();
     }
 }
