@@ -26,6 +26,10 @@ namespace FindMyFamilyDoc.Business
 		public DbSet<DoctorLanguage> DoctorLanguages { get; set; }
         public DbSet<DoctorStaff> DoctorStaffs { get; set; }
 
+        public DbSet<Patient> Patients { get; set; }
+        public DbSet<MedicalHistory> PatientMedicalHistories { get; set; }
+        public DbSet<DoctorAvailability> DoctorAvailabilities { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
