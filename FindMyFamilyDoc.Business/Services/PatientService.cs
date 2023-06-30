@@ -22,6 +22,12 @@ namespace FindMyFamilyDoc.Business.Services
         {
             try
             {
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+                if (user == null)
+                {
+                    return new Result<PatientDetailViewModel>(ApiErrorCode.NotFound.ToString(), "User not found.");
+                }
+
                 var patient = await _dbContext.Patients
                     .Include(p => p.City)
                     .ThenInclude(c => c.State)
@@ -52,7 +58,7 @@ namespace FindMyFamilyDoc.Business.Services
 
                 if (patient == null)
                 {
-                    return new Result<PatientDetailViewModel>(ApiErrorCode.NotFound.ToString(), "Patient not found.");
+                    return new Result<PatientDetailViewModel>(ApiErrorCode.NotFound.ToString(), "User needs to complete their profile.");
                 }
 
                 return new Result<PatientDetailViewModel>(patient);
@@ -93,7 +99,8 @@ namespace FindMyFamilyDoc.Business.Services
                 patient.DateOfBirth = model.DateOfBirth;
                 patient.Gender = Enum.TryParse<Gender>(model.Gender, true, out var genderValue) ? genderValue : throw new ValidationException($"Invalid gender value: {model.Gender}");
                 patient.EmergencyContact = model.EmergencyContact;
-                patient.MaritalStatus = model.MaritalStatus;
+                patient.MaritalStatus = Enum.TryParse<MaritalStatus>(model.MaritalStatus, true, out var maritalStatus)
+                ? maritalStatus : throw new ValidationException($"Invalid gender value: {model.MaritalStatus}");
                 patient.Occupation = model.Occupation;
 
                 // Update user profile completion status
@@ -234,7 +241,8 @@ namespace FindMyFamilyDoc.Business.Services
                 : throw new ValidationException($"Invalid gender value: {model.Gender}"),
                 EmergencyContact = model.EmergencyContact,
                 CurrentMedications = string.Empty,
-                MaritalStatus = model.MaritalStatus,
+                MaritalStatus = Enum.TryParse<MaritalStatus>(model.MaritalStatus, true, out var maritalStatus)
+                ? maritalStatus : throw new ValidationException($"Invalid gender value: {model.MaritalStatus}"),
                 Occupation = model.Occupation
             };
 

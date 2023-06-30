@@ -8,7 +8,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public int? AvailabilityId { get; set; }
 
         [Required]
-        public WeekDay DayOfWeek { get; set; }
+        public string DayOfWeek { get; set; } = default!;
 
         [Required]
         public TimeSpan FromTime { get; set; }
@@ -20,7 +20,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public TimeSpan AppointmentLength { get; set; }
 
         [Required]
-        public int DoctorId { get; set; }
+        public string DoctorId { get; set; } = default!;
 
         public bool IsActive { get; set; } = true;
     }

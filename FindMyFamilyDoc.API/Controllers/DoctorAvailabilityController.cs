@@ -1,9 +1,7 @@
 ﻿using FindMyFamilyDoc.API.Authentication;
 using FindMyFamilyDoc.Business.Interfaces;
-using FindMyFamilyDoc.Business.Services;
 using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.ViewModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FindMyFamilyDoc.API.Controllers
@@ -22,7 +20,7 @@ namespace FindMyFamilyDoc.API.Controllers
 
         [HttpGet("get-doctor-availability/{doctorId}")]
         [RoleAuthorize(UserRoles.Doctor)]
-        public async Task<IActionResult> GetAvailabilityByDoctorIdAsync(int doctorId)
+        public async Task<IActionResult> GetAvailabilityByDoctorIdAsync(string doctorId)
         {
             var result = await _doctorAvailabilityService.GetAvailabilityByDoctorIdAsync(doctorId);
             return Result(result);

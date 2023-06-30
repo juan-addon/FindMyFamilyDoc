@@ -8,7 +8,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         [Required]
         public string UserId { get; set; } = default!;
         public string EmergencyContact { get; set; } = default!;
-        public MaritalStatus MaritalStatus { get; set; }
+        public string MaritalStatus { get; set; } = default!;
         public string Occupation { get; set; } = default!;
         public string? ProfilePicture { get; set; }
     }

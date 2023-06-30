@@ -18,7 +18,7 @@ namespace FindMyFamilyDoc.API.Controllers
             _doctorStaffService = doctorStaffService;
         }
 
-        [HttpPost("update-staff-profile")]
+        [HttpPut("update-staff-profile")]
         [RoleAuthorize(UserRoles.AdministrativeAssistant)]
         public async Task<IActionResult> UpdateStaffProfile([FromBody] StaffProfileUpdateViewModel model)
         {

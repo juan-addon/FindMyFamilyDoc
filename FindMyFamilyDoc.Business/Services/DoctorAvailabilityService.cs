@@ -4,6 +4,7 @@ using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Business.Services
 {
@@ -16,22 +17,25 @@ namespace FindMyFamilyDoc.Business.Services
             _dbContext = dbContext;
         }
 
-        public async Task<Result<IEnumerable<DoctorAvailabilityViewModel>>> GetAvailabilityByDoctorIdAsync(int doctorId)
+        public async Task<Result<IEnumerable<DoctorAvailabilityViewModel>>> GetAvailabilityByDoctorIdAsync(string doctorId)
         {
             try
             {
                 var availabilities = await _dbContext.DoctorAvailabilities
-                    .Where(a => a.DoctorId == doctorId)
+                    .Include(m => m.Doctor)
+                    .Where(a => a.Doctor.UserId == doctorId)
                     .ToListAsync();
 
-                var availabilityViewModels = availabilities.Select(a => new DoctorAvailabilityViewModel
+                var availabilityViewModels = availabilities
+                    .OrderBy(m => m.DayOfWeek)
+                    .Select(a => new DoctorAvailabilityViewModel
                 {
                     AvailabilityId = a.Id,
-                    DayOfWeek = a.DayOfWeek,
+                    DayOfWeek = a.DayOfWeek.ToString(),
                     FromTime = a.FromTime,
                     ToTime = a.ToTime,
                     AppointmentLength = a.AppointmentLength,
-                    DoctorId = a.DoctorId,
+                    DoctorId = a.Doctor.UserId,
                     IsActive = a.IsActive
                 }).ToList();
 
@@ -48,27 +52,31 @@ namespace FindMyFamilyDoc.Business.Services
             try
             {
                 // Validate DayOfWeek enum
-                var validationError = ValidateAvailabilityData(newAvailability);
-                if (!string.IsNullOrEmpty(validationError))
-                    return new Result<DoctorAvailabilityViewModel>(ApiErrorCode.ValidationError.ToString(), validationError);
+                _ = Enum.TryParse<WeekDay>(newAvailability.DayOfWeek, true, out var weekDayValue)
+                ? weekDayValue
+                : throw new ValidationException($"Invalid WeekDay value: {newAvailability.DayOfWeek}");
 
                 // Validate if doctor exists
-                if (!await CheckDoctorExistence(newAvailability.DoctorId))
+
+                var currentDoctor = await _dbContext.Doctors.FirstOrDefaultAsync(d => d.UserId == newAvailability.DoctorId);
+                if (currentDoctor == null)
                     return new Result<DoctorAvailabilityViewModel>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");
 
                 // Validate if doctor already has an availability for the same day
-                var availabilityExists = await _dbContext.DoctorAvailabilities.AnyAsync(a => a.DoctorId == newAvailability.DoctorId && a.DayOfWeek == newAvailability.DayOfWeek);
+                var availabilityExists = await _dbContext.DoctorAvailabilities
+                    .Include(m => m.Doctor)
+                    .AnyAsync(a => a.Doctor.UserId == newAvailability.DoctorId && a.DayOfWeek == weekDayValue);
                 if (availabilityExists)
                     return new Result<DoctorAvailabilityViewModel>(ApiErrorCode.Conflict.ToString(), "An availability for this day already exists for this doctor.");
-
+                
                 // Mapping and adding new availability
                 var availability = new DoctorAvailability
                 {
-                    DayOfWeek = newAvailability.DayOfWeek,
+                    DayOfWeek = weekDayValue,
                     FromTime = newAvailability.FromTime,
                     ToTime = newAvailability.ToTime,
                     AppointmentLength = newAvailability.AppointmentLength,
-                    DoctorId = newAvailability.DoctorId,
+                    DoctorId = currentDoctor.Id,
                     IsActive = newAvailability.IsActive
                 };
 
@@ -95,24 +103,25 @@ namespace FindMyFamilyDoc.Business.Services
                     return new Result<DoctorAvailabilityViewModel>(ApiErrorCode.NotFound.ToString(), "Availability not found.");
 
                 // Validate DayOfWeek enum
-                var validationError = ValidateAvailabilityData(updatedAvailability);
-                if (!string.IsNullOrEmpty(validationError))
-                    return new Result<DoctorAvailabilityViewModel>(ApiErrorCode.ValidationError.ToString(), validationError);
+                _ = Enum.TryParse<WeekDay>(updatedAvailability.DayOfWeek, true, out var weekDayValue)
+                ? weekDayValue
+                : throw new ValidationException($"Invalid WeekDay value: {availability.DayOfWeek}");
 
                 // Validate if doctor exists
-                if (!await CheckDoctorExistence(updatedAvailability.DoctorId))
+                var currentDoctor = await _dbContext.Doctors.FirstOrDefaultAsync(d => d.UserId == updatedAvailability.DoctorId);
+                if (currentDoctor == null)
                     return new Result<DoctorAvailabilityViewModel>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");
 
                 // Validate if doctor already has an availability for the same day (ignoring current)
                 var otherAvailabilityExists = await _dbContext.DoctorAvailabilities
-                    .AnyAsync(a => a.DoctorId == updatedAvailability.DoctorId &&
-                                   a.DayOfWeek == updatedAvailability.DayOfWeek &&
+                    .AnyAsync(a => a.DoctorId == currentDoctor.Id &&
+                                   a.DayOfWeek == weekDayValue &&
                                    a.Id != updatedAvailability.AvailabilityId);
                 if (otherAvailabilityExists)
                     return new Result<DoctorAvailabilityViewModel>(ApiErrorCode.Conflict.ToString(), "An availability for this day already exists for this doctor.");
 
                 // Updating the availability
-                availability.DayOfWeek = updatedAvailability.DayOfWeek;
+                availability.DayOfWeek = weekDayValue;
                 availability.FromTime = updatedAvailability.FromTime;
                 availability.ToTime = updatedAvailability.ToTime;
                 availability.AppointmentLength = updatedAvailability.AppointmentLength;
@@ -127,21 +136,6 @@ namespace FindMyFamilyDoc.Business.Services
             {
                 return new Result<DoctorAvailabilityViewModel>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while updating the availability: {ex.Message}");
             }
-        }
-
-        private string ValidateAvailabilityData(DoctorAvailabilityViewModel availability)
-        {
-            if (!Enum.IsDefined(typeof(WeekDay), availability.DayOfWeek))
-                return $"Invalid DayOfWeek value: {availability.DayOfWeek}";
-
-            // Additional validation rules specific to DoctorAvailability
-
-            return string.Empty;
-        }
-
-        private async Task<bool> CheckDoctorExistence(int doctorId)
-        {
-            return await _dbContext.Doctors.AnyAsync(d => d.Id == doctorId);
         }
     }
 }
