@@ -28,17 +28,17 @@ namespace FindMyFamilyDoc.API.Controllers
 
         [HttpPost("add-doctor-availability")]
         [RoleAuthorize(UserRoles.Doctor)]
-        public async Task<IActionResult> AddAvailabilityAsync([FromBody] DoctorAvailabilityViewModel model)
+        public async Task<IActionResult> AddAvailabilityAsync([FromBody] IEnumerable<DoctorAvailabilityViewModel> models)
         {
-            var result = await _doctorAvailabilityService.AddAvailabilityAsync(model);
+            var result = await _doctorAvailabilityService.AddAvailabilityAsync(models);
             return Result(result);
         }
 
         [HttpPut("update-doctor-availability")]
         [RoleAuthorize(UserRoles.Doctor)]
-        public async Task<IActionResult> UpdateAvailabilityAsync([FromBody] DoctorAvailabilityViewModel model)
+        public async Task<IActionResult> UpdateAvailabilityAsync([FromBody] IEnumerable<DoctorAvailabilityViewModel> models)
         {
-            var result = await _doctorAvailabilityService.UpdateAvailabilityAsync(model);
+            var result = await _doctorAvailabilityService.UpdateAvailabilityAsync(models);
             return Result(result);
         }
     }

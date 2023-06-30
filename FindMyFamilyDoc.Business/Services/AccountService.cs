@@ -337,7 +337,18 @@ namespace FindMyFamilyDoc.Business.Services
         private async Task SendEmailConfirmationAsync(string email, string userId, string emailConfirmationToken)
         {
             var plainTextContent = $"<strong> User Id: {userId}</strong> Token: {emailConfirmationToken}";
-            var htmlContent = $"<strong> User Id: {userId}</strong> Token: {emailConfirmationToken}";
+            var htmlContent = $"<h2>Hello!</h2>" +
+                  $"<p>Thank you for registering with us. To complete your registration, please confirm your email address.</p>" +
+                  $"<p><strong>User Id: {userId}</strong></p>" +
+                  $"<p>Confirmation Token: {emailConfirmationToken}</p>" +
+                  $"<p>Click the link below to confirm your email:</p>" +
+                  $"<a href='http://localhost:3000/auth/confirm-email?userId={userId}&token={emailConfirmationToken}'>" +
+                  "Confirm Email Address" +
+                  "</a>" +
+                  "<p>If the above link does not work, copy and paste the entire URL into your browser.</p>" +
+                  "<p>If you didn't request this, you can safely ignore this email.</p>" +
+                  "<p>Best Regards,</p>" +
+                  "<p>FindYourFamilyDoctor Team</p>";
             await _emailService.SendEmailAsync(email, "Confirm your email", plainTextContent, htmlContent);
         }
 
