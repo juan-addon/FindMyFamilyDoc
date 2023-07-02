@@ -75,7 +75,7 @@ namespace FindMyFamilyDoc.Business.Services
 
             try
             {
-                var patient = await _dbContext.Patients.FindAsync(model.UserId);
+                var patient = await _dbContext.Patients.FirstOrDefaultAsync(m => m.UserId == model.UserId);
 
                 if (patient == null)
                 {
