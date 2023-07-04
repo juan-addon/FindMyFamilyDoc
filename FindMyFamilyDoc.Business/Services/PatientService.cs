@@ -82,7 +82,7 @@ namespace FindMyFamilyDoc.Business.Services
                     return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Patient not found.");
                 }
 
-                var validationError = await ValidatePatientCreation(model);
+                var validationError = await ValidatePatientUpdate(model);
                 if (!string.IsNullOrEmpty(validationError))
                     return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), validationError);
 
@@ -100,7 +100,7 @@ namespace FindMyFamilyDoc.Business.Services
                 patient.Gender = Enum.TryParse<Gender>(model.Gender, true, out var genderValue) ? genderValue : throw new ValidationException($"Invalid gender value: {model.Gender}");
                 patient.EmergencyContact = model.EmergencyContact;
                 patient.MaritalStatus = Enum.TryParse<MaritalStatus>(model.MaritalStatus, true, out var maritalStatus)
-                ? maritalStatus : throw new ValidationException($"Invalid gender value: {model.MaritalStatus}");
+                ? maritalStatus : throw new ValidationException($"Invalid Marital Status value: {model.MaritalStatus}");
                 patient.Occupation = model.Occupation;
 
                 // Update user profile completion status
@@ -221,6 +221,21 @@ namespace FindMyFamilyDoc.Business.Services
             return string.Empty; // No validation errors
         }
 
+        private async Task<string> ValidatePatientUpdate(PatientViewModel model)
+        {
+            // Validate UserId
+            var userExists = await _dbContext.Users.AnyAsync(u => u.Id == model.UserId);
+            if (!userExists)
+                return "User not found.";
+
+            // Validate CityId
+            var cityExists = await _dbContext.Cities.AnyAsync(c => c.Id == model.CityId);
+            if (!cityExists)
+                return "City not found.";
+
+            return string.Empty; // No validation errors
+        }
+
         private Patient MapViewModelToPatient(PatientViewModel model)
         {
             var patient = new Patient
@@ -242,7 +257,7 @@ namespace FindMyFamilyDoc.Business.Services
                 EmergencyContact = model.EmergencyContact,
                 CurrentMedications = string.Empty,
                 MaritalStatus = Enum.TryParse<MaritalStatus>(model.MaritalStatus, true, out var maritalStatus)
-                ? maritalStatus : throw new ValidationException($"Invalid gender value: {model.MaritalStatus}"),
+                ? maritalStatus : throw new ValidationException($"Invalid MaritalStatus value: {model.MaritalStatus}"),
                 Occupation = model.Occupation
             };
 

@@ -75,5 +75,51 @@ namespace FindMyFamilyDoc.Business.Services
                 return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"Failed to approve doctor: {ex.Message}");
             }
         }
+
+        public async Task<Result<dynamic>> RejectDoctor(string userId)
+        {
+            using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            try
+            {
+                var queryable = await QueryHelper.GetDoctorsUnderReviewQueryAsync(_dbContext);
+                var doctor = await queryable.FirstOrDefaultAsync(m => m.UserId == userId);
+
+                if (doctor == null)
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");
+
+                var user = await _userManager.FindByIdAsync(doctor.UserId.ToString());
+                if (user == null)
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "User not found.");
+
+                var oldRoles = await _userManager.GetRolesAsync(user);
+                var removeResult = await _userManager.RemoveFromRolesAsync(user, oldRoles);
+                if (!removeResult.Succeeded)
+                {
+                    var errorMessage = string.Join(", ", removeResult.Errors.Select(e => e.Description));
+                    return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"Failed to remove old roles: {errorMessage}");
+                }
+
+                //doctor.IsRejected = true;
+                _dbContext.Doctors.Update(doctor);
+                await _dbContext.SaveChangesAsync();
+
+                transactionScope.Complete();
+
+                return new Result<dynamic>(new
+                {
+                    Doctor = new
+                    {
+                        doctor.Name,
+                        doctor.UserId,
+                        doctor.Title
+                    },
+                    Message = "Doctor has been rejected."
+                });
+            }
+            catch (Exception ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"Failed to reject doctor: {ex.Message}");
+            }
+        }
     }
 }

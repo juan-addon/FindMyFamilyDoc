@@ -1,5 +1,6 @@
 ﻿using FindMyFamilyDoc.API.Authentication;
 using FindMyFamilyDoc.Business.Interfaces;
+using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FindMyFamilyDoc.API.Controllers
@@ -10,10 +11,13 @@ namespace FindMyFamilyDoc.API.Controllers
 	public class SharedController : BaseController
 	{
 		private readonly IDataService _dataService;
-		public SharedController(IDataService dataService)
+        private readonly IDoctorService _doctorService;
+
+        public SharedController(IDataService dataService, IDoctorService doctorService)
 		{
 			_dataService = dataService;
-		}
+            _doctorService = doctorService;
+        }
 
 		[HttpGet("roles")]
 		public async Task<IActionResult> GetRoles()
@@ -82,6 +86,13 @@ namespace FindMyFamilyDoc.API.Controllers
         public IActionResult GetWeekDays()
         {
             var result = _dataService.GetWeekDays();
+            return Result(result);
+        }
+
+        [HttpGet("get-doctors")]
+        public async Task<IActionResult> GetDoctors([FromQuery] DoctorSearchViewModel searchModel)
+        {
+            var result = await _doctorService.SearchDoctor(searchModel);
             return Result(result);
         }
     }

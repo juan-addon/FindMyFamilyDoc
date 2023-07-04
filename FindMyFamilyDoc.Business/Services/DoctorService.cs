@@ -164,6 +164,67 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        public async Task<Result<List<DoctorDetailViewModel>>> SearchDoctor(DoctorSearchViewModel searchModel)
+        {
+            try
+            {
+                IQueryable<Doctor> query = _dbContext.Doctors
+                    .Include(m => m.DoctorLanguages).ThenInclude(m => m.Language)
+                    .Include(m => m.DoctorEducationBackgrounds)
+                    .Include(m => m.Experiences)
+                    .Include(m => m.DoctorSpecialties).ThenInclude(m => m.Specialty)
+                    .Include(m => m.City).ThenInclude(m => m.State);
+
+                if (searchModel.Specialties != null && searchModel.Specialties.Any())
+                {
+                    query = query.Where(d => d.DoctorSpecialties.Any(ds => searchModel.Specialties.Contains(ds.Specialty.Name)));
+                }
+
+                if (searchModel.Languages != null && searchModel.Languages.Any())
+                {
+                    query = query.Where(d => d.DoctorLanguages.Any(dl => searchModel.Languages.Contains(dl.Language.Name)));
+                }
+
+                /*
+                    if (searchModel.Gender != null)
+                    {
+                        query = query.Where(d => d.Gender == searchModel.Gender);
+                    }
+                */
+
+                /*
+                    if (!string.IsNullOrEmpty(searchModel.PostalCode))
+                    {
+                        // Placeholder for postal code filtering logic
+                    }
+                */
+
+                if (searchModel.Cities != null && searchModel.Cities.Any())
+                {
+                    query = query.Where(d => searchModel.Cities.Contains(d.City.Name));
+                }
+
+                if (searchModel.States != null && searchModel.States.Any())
+                {
+                    query = query.Where(d => searchModel.States.Contains(d.City.State.Name));
+                }
+
+                var doctors = await query.ToListAsync();
+                var doctorViewModels = doctors.Select(MapDoctorToDoctorDetailViewModel).ToList();
+
+                if (!doctorViewModels.Any())
+                {
+                    return new Result<List<DoctorDetailViewModel>>(ApiErrorCode.NotFound.ToString(), "No doctors found matching the specified criteria.");
+                }
+
+                return new Result<List<DoctorDetailViewModel>>(doctorViewModels);
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<DoctorDetailViewModel>>(ApiErrorCode.InternalServerError.ToString(), $"Failed to search doctors: {ex.Message}");
+            }
+        }
+
         private async Task<string> ValidateDoctorCreation(DoctorViewModel model)
         {
             // Validate UserId

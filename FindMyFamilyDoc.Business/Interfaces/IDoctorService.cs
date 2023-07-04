@@ -10,5 +10,6 @@ namespace FindMyFamilyDoc.Business.Interfaces
         Task<Result<DoctorDetailViewModel>> GetDoctorUnderReviewByUserId(string DoctorUserId);
 		Task<Result<dynamic>> CreateDoctor(DoctorViewModel model);
         Task<Result<DoctorDetailViewModel>> GetDoctorProfile(string UserId);
+        Task<Result<List<DoctorDetailViewModel>>> SearchDoctor(DoctorSearchViewModel searchModel);
     }
 }
