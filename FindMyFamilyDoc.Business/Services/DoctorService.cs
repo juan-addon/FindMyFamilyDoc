@@ -9,27 +9,27 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Business.Services
 {
-	public class DoctorService : IDoctorService
-	{
-		private readonly DatabaseContext _dbContext;
+    public class DoctorService : IDoctorService
+    {
+        private readonly DatabaseContext _dbContext;
 
         public DoctorService(DatabaseContext dbContext)
-		{
-			_dbContext = dbContext;
+        {
+            _dbContext = dbContext;
         }
 
-		public async Task<Result<IEnumerable<dynamic>>> GetDoctors()
-		{
-			try
-			{
-				var doctors = await _dbContext.Doctors.ToListAsync();
-				return new Result<IEnumerable<dynamic>>(doctors);
-			}
-			catch (Exception ex)
-			{
-				return new Result<IEnumerable<dynamic>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving doctors: {ex.Message}");
-			}
-		}
+        public async Task<Result<IEnumerable<dynamic>>> GetDoctors()
+        {
+            try
+            {
+                var doctors = await _dbContext.Doctors.ToListAsync();
+                return new Result<IEnumerable<dynamic>>(doctors);
+            }
+            catch (Exception ex)
+            {
+                return new Result<IEnumerable<dynamic>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving doctors: {ex.Message}");
+            }
+        }
 
         public async Task<Result<IEnumerable<DoctorsUnderReviewViewModel>>> GetDoctorsUnderReview()
         {
@@ -62,9 +62,9 @@ namespace FindMyFamilyDoc.Business.Services
         }
 
         public async Task<Result<DoctorDetailViewModel>> GetDoctorUnderReviewByUserId(string DoctorUserId)
-		{
-			try
-			{
+        {
+            try
+            {
                 var queryable = await QueryHelper.GetDoctorsUnderReviewQueryAsync(_dbContext);
                 var doctor = await queryable
                     .Where(m => m.UserId == DoctorUserId)
@@ -80,11 +80,11 @@ namespace FindMyFamilyDoc.Business.Services
                 else
                     return new Result<DoctorDetailViewModel>(ApiErrorCode.DataNotFound.ToString(), $"Doctor with UserID {DoctorUserId} not found.");
             }
-			catch (Exception ex)
-			{
-				return new Result<DoctorDetailViewModel>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving the doctor: {ex.Message}");
-			}
-		}
+            catch (Exception ex)
+            {
+                return new Result<DoctorDetailViewModel>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving the doctor: {ex.Message}");
+            }
+        }
 
         public async Task<Result<dynamic>> CreateDoctor(DoctorViewModel model)
         {
@@ -92,7 +92,7 @@ namespace FindMyFamilyDoc.Business.Services
 
             try
             {
-                var validationError = await ValidateDoctorCreation(model);
+                var validationError = await ValidateDoctor(model, false);
                 if (!string.IsNullOrEmpty(validationError))
                     return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), validationError);
 
@@ -135,6 +135,56 @@ namespace FindMyFamilyDoc.Business.Services
             {
                 await transaction.RollbackAsync();
                 return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while creating the doctor: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<dynamic>> UpdateDoctor(DoctorViewModel model)
+        {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                var validationError = await ValidateDoctor(model, true);
+                if (!string.IsNullOrEmpty(validationError))
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), validationError);
+
+                var doctor = await _dbContext.Doctors.FirstOrDefaultAsync(m => m.UserId == model.UserId);
+                if (doctor == null)
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");
+
+                doctor = MapViewModelToDoctor(model, doctor);
+
+                _dbContext.Entry(doctor).State = EntityState.Modified;
+
+                await _dbContext.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return new Result<dynamic>(new
+                {
+                    User = new
+                    {
+                        doctor.Name,
+                        doctor.UserId,
+                        doctor.Title
+                    },
+                    Message = "Your account has been updated. Please note that your profile must be approved by an administrator before the changes will be reflected on your account. Check your email for further updates."
+                });
+            }
+            catch (SqlException ex)
+            {
+                await transaction.RollbackAsync();
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"A database error occurred while updating the doctor: {ex.Message}");
+            }
+            catch (ValidationException ex)
+            {
+                await transaction.RollbackAsync();
+                return new Result<dynamic>(ApiErrorCode.ValidationError.ToString(), ex.Message);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while updating the doctor: {ex.Message}");
             }
         }
 
@@ -225,17 +275,25 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
-        private async Task<string> ValidateDoctorCreation(DoctorViewModel model)
+        private async Task<string> ValidateDoctor(DoctorViewModel model, bool isUpdate = false)
         {
             // Validate UserId
             var userExists = await _dbContext.Users.AnyAsync(u => u.Id == model.UserId);
             if (!userExists)
                 return "User not found.";
 
-            //Duplicate Doctor
+            // Validate Doctor existence for update, check for duplicates during creation
             var doctorExists = await _dbContext.Doctors.AnyAsync(u => u.UserId == model.UserId);
-            if (doctorExists)
-                return "A Doctor profile already exists for this user. Each user can only have one Doctor profile.";
+            if (isUpdate)
+            {
+                if (!doctorExists)
+                    return "Doctor profile not found for this user.";
+            }
+            else
+            {
+                if (doctorExists)
+                    return "A Doctor profile already exists for this user. Each user can only have one Doctor profile.";
+            }
 
             // Validate CityId
             var cityExists = await _dbContext.Cities.AnyAsync(c => c.Id == model.CityId);
@@ -259,60 +317,59 @@ namespace FindMyFamilyDoc.Business.Services
             return string.Empty; // No validation errors
         }
 
-        private Doctor MapViewModelToDoctor(DoctorViewModel model)
+        private Doctor MapViewModelToDoctor(DoctorViewModel model, Doctor? doctor = null)
         {
-            var doctor = new Doctor
-            {
-                Title = model.Title,
-                FirstName = model.FirstName,
-                MiddleName = model.MiddleName,
-                LastName = model.LastName,
-                Phone = model.Phone,
-                ContactInformation = model.ContactInformation,
-                WaitingTime = model.WaitingTime,
-                Fees = model.Fees,
-                ProfilePicture = model.ProfilePicture ?? string.Empty,
-                IsAcceptingNewPatients = model.IsAcceptingNewPatients,
-                UserId = model.UserId,
-                CityId = model.CityId,
-                Street = model.Street,
-                PostalCode = model.PostalCode,
-                DateOfBirth = model.DateOfBirth,
-                Gender = Enum.TryParse<Gender>(model.Gender, true, out var genderValue)
+            doctor = doctor ?? new Doctor();
+
+            // Map fields from model to doctor
+            doctor.Title = model.Title;
+            doctor.FirstName = model.FirstName;
+            doctor.MiddleName = model.MiddleName;
+            doctor.LastName = model.LastName;
+            doctor.Phone = model.Phone;
+            doctor.ContactInformation = model.ContactInformation;
+            doctor.WaitingTime = model.WaitingTime;
+            doctor.Fees = model.Fees;
+            doctor.ProfilePicture = model.ProfilePicture ?? string.Empty;
+            doctor.IsAcceptingNewPatients = model.IsAcceptingNewPatients;
+            doctor.UserId = model.UserId;
+            doctor.CityId = model.CityId;
+            doctor.Street = model.Street;
+            doctor.PostalCode = model.PostalCode;
+            doctor.DateOfBirth = model.DateOfBirth;
+            doctor.Gender = Enum.TryParse<Gender>(model.Gender, true, out var genderValue)
                 ? genderValue
-                : throw new ValidationException($"Invalid gender value: {model.Gender}")
-            };
+                : throw new ValidationException($"Invalid gender value: {model.Gender}");
 
-            // Add DoctorLanguages
-            doctor.DoctorLanguages = model.DoctorLanguages.Select(language => new DoctorLanguage
-            {
-                LanguageId = language.LanguageId
-            }).ToList();
+            // Replace collections if they exist or create new ones
+            UpdateCollection(doctor.DoctorLanguages,
+                m => m.DoctorLanguages.Select(l => new DoctorLanguage { LanguageId = l.LanguageId }),
+                model);
 
-            // Add DoctorSpecialties
-            doctor.DoctorSpecialties = model.DoctorSpecialties.Select(specialty => new DoctorSpecialty
-            {
-                SpecialtyId = specialty.SpecialtyId
-            }).ToList();
+            UpdateCollection(doctor.DoctorSpecialties,
+                m => m.DoctorSpecialties.Select(s => new DoctorSpecialty { SpecialtyId = s.SpecialtyId }),
+                model);
 
-            // Add DoctorEducationBackgrounds
-            doctor.DoctorEducationBackgrounds = model.DoctorEducationBackgrounds.Select(education => new DoctorEducationBackground
-            {
-                InstitutionName = education.InstitutionName,
-                Degree = education.Degree,
-                FieldOfStudy = education.FieldOfStudy,
-                StartDate = education.StartDate,
-                EndDate = education.EndDate
-            }).ToList();
+            UpdateCollection(doctor.DoctorEducationBackgrounds,
+                m => m.DoctorEducationBackgrounds.Select(e => new DoctorEducationBackground
+                {
+                    InstitutionName = e.InstitutionName,
+                    Degree = e.Degree,
+                    FieldOfStudy = e.FieldOfStudy,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate
+                }),
+                model);
 
-            // Add DoctorExperiences
-            doctor.Experiences = model.Experiences.Select(experience => new DoctorExperience
-            {
-                CompanyName = experience.CompanyName,
-                Description = experience.Description,
-                StartDate = experience.StartDate,
-                EndDate = experience.EndDate
-            }).ToList();
+            UpdateCollection(doctor.Experiences,
+                m => m.Experiences.Select(e => new DoctorExperience
+                {
+                    CompanyName = e.CompanyName,
+                    Description = e.Description,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate
+                }),
+                model);
 
             return doctor;
         }
@@ -370,6 +427,17 @@ namespace FindMyFamilyDoc.Business.Services
                     SpecialtyName = ds.Specialty.Name
                 }).ToList()
             };
+        }
+
+        private void UpdateCollection<T>( ICollection<T> existingCollection, Func<DoctorViewModel, IEnumerable<T>> newCollectionSelector, DoctorViewModel model)
+        {
+            existingCollection = existingCollection ?? new List<T>();
+            existingCollection.Clear();
+
+            foreach (var item in newCollectionSelector(model))
+            {
+                existingCollection.Add(item);
+            }
         }
     }
 }

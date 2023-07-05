@@ -28,6 +28,14 @@ namespace FindMyFamilyDoc.API.Controllers
             return Result(result);
         }
 
+        [HttpPut("update-doctor-profile")]
+        [RoleAuthorize(UserRoles.Doctor)]
+        public async Task<IActionResult> UpdateDoctor([FromBody] DoctorViewModel model)
+        {
+            var result = await _doctorService.UpdateDoctor(model);
+            return Result(result);
+        }
+
         [HttpGet("doctor-underreview-info/{userId}")]
         [RoleAuthorize(UserRoles.DoctorUnderReview)]
         public async Task<IActionResult> GetDoctorUnderReviewInfo(string userId)
