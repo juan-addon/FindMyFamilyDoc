@@ -26,8 +26,16 @@ namespace FindMyFamilyDoc.API.Controllers
             return Result(result);
         }
 
+        [HttpGet("get-doctor-availability/{staffId}")]
+        [RoleAuthorize(UserRoles.AdministrativeAssistant)]
+        public async Task<IActionResult> GetDoctorAvailabilityByStaffIdAsync(string staffId)
+        {
+            var result = await _doctorAvailabilityService.GetDoctorAvailabilityByStaffIdAsync(staffId);
+            return Result(result);
+        }
+
         [HttpPost("add-doctor-availability")]
-        [RoleAuthorize(UserRoles.Doctor)]
+        [RoleAuthorize(UserRoles.Doctor, UserRoles.AdministrativeAssistant)]
         public async Task<IActionResult> AddAvailabilityAsync([FromBody] IEnumerable<DoctorAvailabilityViewModel> models)
         {
             var result = await _doctorAvailabilityService.AddAvailabilityAsync(models);
@@ -35,7 +43,7 @@ namespace FindMyFamilyDoc.API.Controllers
         }
 
         [HttpPut("update-doctor-availability")]
-        [RoleAuthorize(UserRoles.Doctor)]
+        [RoleAuthorize(UserRoles.Doctor, UserRoles.AdministrativeAssistant)]
         public async Task<IActionResult> UpdateAvailabilityAsync([FromBody] IEnumerable<DoctorAvailabilityViewModel> models)
         {
             var result = await _doctorAvailabilityService.UpdateAvailabilityAsync(models);

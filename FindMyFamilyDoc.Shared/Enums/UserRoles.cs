@@ -21,11 +21,19 @@ namespace FindMyFamilyDoc.Shared.Enums
         AdministrativeAssistant 
     }
 
-    public class RoleAuthorizeAttribute : AuthorizeAttribute
+    /*public class RoleAuthorizeAttribute : AuthorizeAttribute
     {
         public RoleAuthorizeAttribute(UserRoles role)
         {
             Roles = Enum.GetName(typeof(UserRoles), role);
+        }
+    }*/
+
+    public class RoleAuthorizeAttribute : AuthorizeAttribute
+    {
+        public RoleAuthorizeAttribute(params UserRoles[] roles)
+        {
+            Roles = string.Join(",", roles.Select(role => Enum.GetName(typeof(UserRoles), role)));
         }
     }
 }

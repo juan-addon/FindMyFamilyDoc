@@ -1,5 +1,4 @@
-﻿using FindMyFamilyDoc.Shared.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Shared.ViewModels
 {
@@ -19,8 +18,9 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         [Required]
         public TimeSpan AppointmentLength { get; set; }
 
-        [Required]
         public string DoctorId { get; set; } = default!;
+
+        public string StaffId { get; set; } = default!;
 
         public bool IsActive { get; set; } = true;
     }

@@ -47,6 +47,44 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        public async Task<Result<IEnumerable<DoctorAvailabilityViewModel>>> GetDoctorAvailabilityByStaffIdAsync(string staffId)
+        {
+            try
+            {
+                var staff = await _dbContext.DoctorStaffs.FirstOrDefaultAsync(s => s.UserId == staffId);
+
+                if (staff == null || staff.DoctorId == 0)
+                {
+                    return new Result<IEnumerable<DoctorAvailabilityViewModel>>(ApiErrorCode.NotFound.ToString(), $"Staff with id {staffId} not found or it doesn't have an associated Doctor.");
+                }
+
+                // Use the DoctorId associated with the staff to retrieve the availabilities
+                var availabilities = await _dbContext.DoctorAvailabilities
+                    .Include(m => m.Doctor)
+                    .Where(a => a.Doctor.Id == staff.DoctorId)
+                    .ToListAsync();
+
+                var availabilityViewModels = availabilities
+                    .OrderBy(m => m.DayOfWeek)
+                    .Select(a => new DoctorAvailabilityViewModel
+                    {
+                        AvailabilityId = a.Id,
+                        DayOfWeek = a.DayOfWeek.ToString(),
+                        FromTime = a.FromTime,
+                        ToTime = a.ToTime,
+                        AppointmentLength = a.AppointmentLength,
+                        DoctorId = a.Doctor.UserId,
+                        IsActive = a.IsActive
+                    }).ToList();
+
+                return new Result<IEnumerable<DoctorAvailabilityViewModel>>(availabilityViewModels);
+            }
+            catch (Exception ex)
+            {
+                return new Result<IEnumerable<DoctorAvailabilityViewModel>>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while retrieving the doctor availabilities: {ex.Message}");
+            }
+        }
+
         public async Task<Result<dynamic>> AddAvailabilityAsync(IEnumerable<DoctorAvailabilityViewModel> newAvailabilities)
         {
             // Start the transaction.
@@ -63,9 +101,11 @@ namespace FindMyFamilyDoc.Business.Services
                     : throw new ValidationException($"Invalid WeekDay value: {newAvailability.DayOfWeek}");
 
                     // Validate if doctor exists
-                    var currentDoctor = await _dbContext.Doctors.FirstOrDefaultAsync(d => d.UserId == newAvailability.DoctorId);
+                    var (currentDoctor, error) = await GetDoctorIdByDoctorUserOrStaff(newAvailability.DoctorId, newAvailability.StaffId);
                     if (currentDoctor == null)
-                        return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");
+                    {
+                        return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), error ?? "Doctor not found.");
+                    }
 
                     // Validate if doctor already has an availability for the same day
                     var availabilityExists = await _dbContext.DoctorAvailabilities
@@ -129,9 +169,11 @@ namespace FindMyFamilyDoc.Business.Services
                     : throw new ValidationException($"Invalid WeekDay value: {availability.DayOfWeek}");
 
                     // Validate if doctor exists
-                    var currentDoctor = await _dbContext.Doctors.FirstOrDefaultAsync(d => d.UserId == updatedAvailability.DoctorId);
+                    var (currentDoctor, error) = await GetDoctorIdByDoctorUserOrStaff(updatedAvailability.DoctorId, updatedAvailability.StaffId);
                     if (currentDoctor == null)
-                        return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");
+                    {
+                        return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), error ?? "Doctor not found.");
+                    }
 
                     // Validate if doctor already has an availability for the same day (ignoring current)
                     var otherAvailabilityExists = await _dbContext.DoctorAvailabilities
@@ -167,6 +209,30 @@ namespace FindMyFamilyDoc.Business.Services
                 await transaction.RollbackAsync();
                 return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while adding the availability: {ex.Message}");
             }
+        }
+
+        private async Task<(Doctor? doctor, string? error)> GetDoctorIdByDoctorUserOrStaff(string userId, string staffUserId)
+        {
+            // Try to get doctor by userId
+            var doctor = await _dbContext.Doctors.FirstOrDefaultAsync(d => d.UserId == userId);
+
+            if (doctor == null)
+            {
+                // If doctor not found, try to get staff and then get doctor by staff's DoctorId
+                var staff = await _dbContext.DoctorStaffs.FirstOrDefaultAsync(s => s.UserId == staffUserId);
+                if (staff != null)
+                {
+                    doctor = await _dbContext.Doctors.FirstOrDefaultAsync(d => d.Id == staff.DoctorId);
+                }
+            }
+
+            // If doctor is still not found, return an error message
+            if (doctor == null)
+            {
+                return (null, "Neither a doctor nor a staff member was found for the provided userId.");
+            }
+
+            return (doctor, null);
         }
     }
 }
