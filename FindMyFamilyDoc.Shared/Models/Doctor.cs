@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FindMyFamilyDoc.Shared.Models
 {
@@ -38,5 +39,8 @@ namespace FindMyFamilyDoc.Shared.Models
 
         // 1:N relationship to Availability
         public ICollection<DoctorAvailability> DoctorAvailabilities { get; set; } = new List<DoctorAvailability>();
+
+        [InverseProperty("Doctor")]
+        public virtual List<DoctorPatientAssociation>? DoctorPatientAssociations { get; set; }
     }
 }

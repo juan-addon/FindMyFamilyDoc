@@ -316,6 +316,48 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        public async Task<Result<dynamic>> ProcessPatientRequest(ProcessPatientRequestViewModel model)
+        {
+            try
+            {
+                var association = await _dbContext.DoctorPatientAssociations
+                    .FirstOrDefaultAsync(dpa => dpa.DoctorUserId == model.DoctorId && dpa.PatientUserId == model.PatientId && dpa.Status == AssociationStatus.Pending);
+                if (association == null)
+                {
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Request not found.");
+                }
+
+                if (!Enum.TryParse(model.Status, out AssociationStatus status))
+                {
+                    return new Result<dynamic>(ApiErrorCode.ValidationError.ToString(), "Invalid status value.");
+                }
+
+                association.Status = status;
+                association.Timestamp = DateTime.Now;
+                association.ResultMessage = model.ResultMessage;
+
+                string message;
+                if (status == AssociationStatus.Approved)
+                {
+                    message = "Patient approved.";
+                }
+                else
+                {
+                    _dbContext.DoctorPatientAssociations.Remove(association);
+                    message = "Patient rejected.";
+                }
+
+                _dbContext.Entry(association).State = EntityState.Modified;
+                await _dbContext.SaveChangesAsync();
+
+                return new Result<dynamic>(new { Message = message });
+            }
+            catch (Exception ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while processing a patient request: {ex.Message}");
+            }
+        }
+
         private async Task<string> ValidateDoctor(DoctorViewModel model, bool isUpdate = false)
         {
             // Validate UserId

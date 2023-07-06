@@ -1,4 +1,5 @@
 ﻿using FindMyFamilyDoc.Shared.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FindMyFamilyDoc.Shared.Models
 {
@@ -8,5 +9,8 @@ namespace FindMyFamilyDoc.Shared.Models
         public string CurrentMedications { get; set; } = default!;
         public MaritalStatus MaritalStatus { get; set; }
         public string Occupation { get; set; } = default!;
+
+        [InverseProperty("Patient")]
+        public virtual List<DoctorPatientAssociation>? DoctorPatientAssociations { get; set; }
     }
 }

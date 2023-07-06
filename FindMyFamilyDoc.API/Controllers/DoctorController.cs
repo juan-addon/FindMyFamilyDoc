@@ -67,5 +67,13 @@ namespace FindMyFamilyDoc.API.Controllers
             var result = await _doctorStaffService.GetStaffByDoctorId(doctorUserId);
             return Result(result);
         }
+
+        [HttpPut("process-patient-request")]
+        [RoleAuthorize(UserRoles.Doctor)]
+        public async Task<IActionResult> ProcessPatientRequest([FromBody] ProcessPatientRequestViewModel model)
+        {
+            var result = await _doctorService.ProcessPatientRequest(model);
+            return Result(result);
+        }
     }
 }

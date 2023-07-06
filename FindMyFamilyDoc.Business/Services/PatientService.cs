@@ -201,6 +201,67 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        public async Task<Result<dynamic>> RequestDoctor(DoctorPatientRequestViewModel model)
+        {
+            try
+            {
+                // Check if patient already has an approved doctor
+                var existingApprovedAssociation = await _dbContext.DoctorPatientAssociations
+                    .FirstOrDefaultAsync(dpa => dpa.PatientUserId == model.PatientId && dpa.Status == AssociationStatus.Approved);
+                if (existingApprovedAssociation != null)
+                {
+                    return new Result<dynamic>(ApiErrorCode.BadRequest.ToString(), "You already have an approved doctor.");
+                }
+
+                // Check if request already exists
+                var existingRequest = await _dbContext.DoctorPatientAssociations
+                    .FirstOrDefaultAsync(dpa => dpa.DoctorUserId == model.DoctorId && dpa.PatientUserId == model.PatientId && dpa.Status == AssociationStatus.Pending);
+                if (existingRequest != null)
+                {
+                    return new Result<dynamic>(ApiErrorCode.Conflict.ToString(), "Request already exists.");
+                }
+
+                // Check if the doctor exists
+                var doctor = await _dbContext.Doctors.FirstOrDefaultAsync(d => d.UserId == model.DoctorId);
+                if (doctor == null)
+                {
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");
+                }
+
+                // Check if the patient exists
+                var patient = await _dbContext.Patients.FirstOrDefaultAsync(p => p.UserId == model.PatientId);
+                if (patient == null)
+                {
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Patient not found.");
+                }
+
+                // Check if the doctor is under review
+                //to-do
+                /*var isUnderReview = await _dbContext.DoctorReviews.AnyAsync(dr => dr.DoctorUserId == model.DoctorId && dr.Status == ReviewStatus.UnderReview);
+                if (isUnderReview)
+                {
+                    return new Result<dynamic>(ApiErrorCode.BadRequest.ToString(), "Doctor is currently under review.");
+                }*/
+
+                var newAssociation = new DoctorPatientAssociation
+                {
+                    DoctorUserId = model.DoctorId,
+                    PatientUserId = model.PatientId,
+                    Status = AssociationStatus.Pending,
+                    Timestamp = DateTime.Now,
+                };
+
+                _dbContext.DoctorPatientAssociations.Add(newAssociation);
+                await _dbContext.SaveChangesAsync();
+
+                return new Result<dynamic>(new { Message = "Request sent." });
+            }
+            catch (Exception ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while requesting a doctor: {ex.Message}");
+            }
+        }
+
         private async Task<string> ValidatePatientCreation(PatientViewModel model)
         {
             // Validate UserId

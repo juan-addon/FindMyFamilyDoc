@@ -12,5 +12,6 @@ namespace FindMyFamilyDoc.Business.Interfaces
         Task<Result<dynamic>> UpdateDoctor(DoctorViewModel model);
         Task<Result<DoctorDetailViewModel>> GetDoctorProfile(string UserId);
         Task<Result<List<DoctorDetailViewModel>>> SearchDoctor(DoctorSearchViewModel searchModel);
+        Task<Result<dynamic>> ProcessPatientRequest(ProcessPatientRequestViewModel model);
     }
 }

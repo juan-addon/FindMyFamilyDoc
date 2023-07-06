@@ -25,6 +25,7 @@ namespace FindMyFamilyDoc.Business
 		public DbSet<Language> Languages { get; set; }
 		public DbSet<DoctorLanguage> DoctorLanguages { get; set; }
         public DbSet<DoctorStaff> DoctorStaffs { get; set; }
+        public DbSet<DoctorPatientAssociation> DoctorPatientAssociations { get; set; }
 
         public DbSet<Patient> Patients { get; set; }
         public DbSet<MedicalHistory> PatientMedicalHistories { get; set; }
