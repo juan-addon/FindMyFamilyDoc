@@ -26,14 +26,6 @@ namespace FindMyFamilyDoc.API.Controllers
             return Result(result);
         }
 
-        [HttpGet("get-doctor-availability/{staffId}")]
-        [RoleAuthorize(UserRoles.AdministrativeAssistant)]
-        public async Task<IActionResult> GetDoctorAvailabilityByStaffIdAsync(string staffId)
-        {
-            var result = await _doctorAvailabilityService.GetDoctorAvailabilityByStaffIdAsync(staffId);
-            return Result(result);
-        }
-
         [HttpPost("add-doctor-availability")]
         [RoleAuthorize(UserRoles.Doctor, UserRoles.AdministrativeAssistant)]
         public async Task<IActionResult> AddAvailabilityAsync([FromBody] IEnumerable<DoctorAvailabilityViewModel> models)

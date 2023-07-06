@@ -148,13 +148,54 @@ namespace FindMyFamilyDoc.Business.Services
                 if (!string.IsNullOrEmpty(validationError))
                     return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), validationError);
 
-                var doctor = await _dbContext.Doctors.FirstOrDefaultAsync(m => m.UserId == model.UserId);
+                // Get the doctor and related data from the database
+                var doctor = await _dbContext.Doctors
+                    .Include(d => d.DoctorLanguages)
+                    .Include(d => d.DoctorSpecialties)
+                    .Include(d => d.DoctorEducationBackgrounds)
+                    .Include(d => d.Experiences)
+                    .FirstOrDefaultAsync(m => m.UserId == model.UserId);
+
                 if (doctor == null)
                     return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");
 
+                // Map changes from the ViewModel to the existing doctor entity
                 doctor = MapViewModelToDoctor(model, doctor);
 
-                _dbContext.Entry(doctor).State = EntityState.Modified;
+                // Update the doctor entity and its related entities manually
+                _dbContext.Update(doctor);
+
+                foreach (var item in doctor.DoctorLanguages)
+                {
+                    if (item.Id == 0)
+                        _dbContext.Entry(item).State = EntityState.Added;
+                    else
+                        _dbContext.Entry(item).State = EntityState.Modified;
+                }
+
+                foreach (var item in doctor.DoctorSpecialties)
+                {
+                    if (item.Id == 0)
+                        _dbContext.Entry(item).State = EntityState.Added;
+                    else
+                        _dbContext.Entry(item).State = EntityState.Modified;
+                }
+
+                foreach (var item in doctor.DoctorEducationBackgrounds)
+                {
+                    if (item.Id == 0)
+                        _dbContext.Entry(item).State = EntityState.Added;
+                    else
+                        _dbContext.Entry(item).State = EntityState.Modified;
+                }
+
+                foreach (var item in doctor.Experiences)
+                {
+                    if (item.Id == 0)
+                        _dbContext.Entry(item).State = EntityState.Added;
+                    else
+                        _dbContext.Entry(item).State = EntityState.Modified;
+                }
 
                 await _dbContext.SaveChangesAsync();
 
@@ -168,7 +209,7 @@ namespace FindMyFamilyDoc.Business.Services
                         doctor.UserId,
                         doctor.Title
                     },
-                    Message = "Your account has been updated. Please note that your profile must be approved by an administrator before the changes will be reflected on your account. Check your email for further updates."
+                    Message = "Your account has been updated."
                 });
             }
             catch (SqlException ex)
@@ -259,7 +300,7 @@ namespace FindMyFamilyDoc.Business.Services
                     query = query.Where(d => searchModel.States.Contains(d.City.State.Name));
                 }
 
-                var doctors = await query.ToListAsync();
+                var doctors = await query.Where(m => m.IsAcceptingNewPatients).ToListAsync();
                 var doctorViewModels = doctors.Select(MapDoctorToDoctorDetailViewModel).ToList();
 
                 if (!doctorViewModels.Any())

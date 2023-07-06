@@ -23,7 +23,7 @@ namespace FindMyFamilyDoc.Business.Services
             {
                 var availabilities = await _dbContext.DoctorAvailabilities
                     .Include(m => m.Doctor)
-                    .Where(a => a.Doctor.UserId == doctorId)
+                    .Where(a => a.Doctor.UserId == doctorId && a.IsActive)
                     .ToListAsync();
 
                 var availabilityViewModels = availabilities
@@ -61,7 +61,7 @@ namespace FindMyFamilyDoc.Business.Services
                 // Use the DoctorId associated with the staff to retrieve the availabilities
                 var availabilities = await _dbContext.DoctorAvailabilities
                     .Include(m => m.Doctor)
-                    .Where(a => a.Doctor.Id == staff.DoctorId)
+                    .Where(a => a.Doctor.Id == staff.DoctorId && a.IsActive)
                     .ToListAsync();
 
                 var availabilityViewModels = availabilities
@@ -104,13 +104,13 @@ namespace FindMyFamilyDoc.Business.Services
                     var (currentDoctor, error) = await GetDoctorIdByDoctorUserOrStaff(newAvailability.DoctorId, newAvailability.StaffId);
                     if (currentDoctor == null)
                     {
-                        return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), error ?? "Doctor not found.");
+                        return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), error ?? "Doctor or Staff not found.");
                     }
 
                     // Validate if doctor already has an availability for the same day
                     var availabilityExists = await _dbContext.DoctorAvailabilities
                         .Include(m => m.Doctor)
-                        .AnyAsync(a => a.Doctor.UserId == newAvailability.DoctorId && a.DayOfWeek == weekDayValue);
+                        .AnyAsync(a => a.Doctor.UserId == currentDoctor.UserId && a.DayOfWeek == weekDayValue && a.IsActive);
                     if (availabilityExists)
                         return new Result<dynamic>(ApiErrorCode.Conflict.ToString(), $"An availability for {weekDayValue} already exists for this doctor.");
 
@@ -172,13 +172,14 @@ namespace FindMyFamilyDoc.Business.Services
                     var (currentDoctor, error) = await GetDoctorIdByDoctorUserOrStaff(updatedAvailability.DoctorId, updatedAvailability.StaffId);
                     if (currentDoctor == null)
                     {
-                        return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), error ?? "Doctor not found.");
+                        return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), error ?? "Doctor or Staff not found.");
                     }
 
                     // Validate if doctor already has an availability for the same day (ignoring current)
                     var otherAvailabilityExists = await _dbContext.DoctorAvailabilities
                         .AnyAsync(a => a.DoctorId == currentDoctor.Id &&
                                        a.DayOfWeek == weekDayValue &&
+                                       a.IsActive &&
                                        a.Id != updatedAvailability.AvailabilityId);
                     if (otherAvailabilityExists)
                         return new Result<dynamic>(ApiErrorCode.Conflict.ToString(), $"An availability for {weekDayValue} already exists for this doctor.");

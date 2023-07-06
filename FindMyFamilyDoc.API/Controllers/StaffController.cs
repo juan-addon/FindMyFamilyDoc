@@ -12,10 +12,12 @@ namespace FindMyFamilyDoc.API.Controllers
     public class StaffController : BaseController
     {
         private readonly IDoctorStaffService _doctorStaffService;
+        private readonly IDoctorAvailabilityService _doctorAvailabilityService;
 
-        public StaffController(IDoctorStaffService doctorStaffService)
+        public StaffController(IDoctorStaffService doctorStaffService, IDoctorAvailabilityService doctorAvailabilityService)
         {
             _doctorStaffService = doctorStaffService;
+            _doctorAvailabilityService = doctorAvailabilityService;
         }
 
         [HttpPut("update-staff-profile")]
@@ -31,6 +33,14 @@ namespace FindMyFamilyDoc.API.Controllers
         public async Task<IActionResult> GetStaffProfile(string staffUserId)
         {
             var result = await _doctorStaffService.GetStaffProfileByUserId(staffUserId);
+            return Result(result);
+        }
+
+        [HttpGet("get-doctor-availability/{staffUserId}")]
+        [RoleAuthorize(UserRoles.AdministrativeAssistant)]
+        public async Task<IActionResult> GetDoctorAvailabilityByStaffIdAsync(string staffUserId)
+        {
+            var result = await _doctorAvailabilityService.GetDoctorAvailabilityByStaffIdAsync(staffUserId);
             return Result(result);
         }
     }
