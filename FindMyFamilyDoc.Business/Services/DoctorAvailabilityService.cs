@@ -4,6 +4,7 @@ using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Errors.Model;
 using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Business.Services
@@ -212,43 +213,68 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
-        public async Task<List<AppointmentSlot>> GetDoctorAvailabilitySlots(string doctorId, WeekDay dayOfWeek)
+        public async Task<Result<List<AppointmentSlot>>> GetDoctorAvailabilitySlots(string doctorId, DateTime date)
         {
-            // Get the doctor's availability periods for the specific day
-            var availabilities = await _dbContext.DoctorAvailabilities
-                .Include(m => m.Doctor)
-                .Where(da => da.Doctor.UserId == doctorId && da.DayOfWeek == dayOfWeek && da.IsActive)
-                .ToListAsync();
-
-            // Get the appointments for the doctor and day
-            var appointments = await _dbContext.PatientAppointments
-                .Where(a => a.DoctorId == doctorId && a.DayOfWeek == dayOfWeek && (a.Status == AppointmentStatus.Scheduled || a.Status == AppointmentStatus.Rescheduled))
-                .ToListAsync();
-
-            var slots = new List<AppointmentSlot>();
-
-            foreach (var availability in availabilities)
+            try
             {
-                var slotStartTime = availability.FromTime;
-                while (slotStartTime + availability.AppointmentLength <= availability.ToTime)
+                // Check if date is not in the past
+                if (date.Date < DateTime.UtcNow.Date)
                 {
-                    var slotEndTime = slotStartTime + availability.AppointmentLength;
-
-                    // Check if the slot is already booked
-                    if (!appointments.Any(a => a.FromTime == slotStartTime && a.ToTime == slotEndTime))
-                    {
-                        slots.Add(new AppointmentSlot
-                        {
-                            FromTime = slotStartTime,
-                            ToTime = slotEndTime
-                        });
-                    }
-
-                    slotStartTime = slotEndTime;
+                    throw new ValidationException("Invalid date: appointment date cannot be in the past.");
                 }
-            }
 
-            return slots;
+                // Determine the day of the week
+                var weekDayEnum = (WeekDay)Enum.Parse(typeof(WeekDay), date.DayOfWeek.ToString());
+
+                // Get the doctor's availability periods for the specific day
+                var availabilities = await _dbContext.DoctorAvailabilities
+                    .Include(m => m.Doctor)
+                    .Where(da => da.Doctor.UserId == doctorId && da.DayOfWeek == weekDayEnum && da.IsActive)
+                    .ToListAsync();
+
+                // Get the appointments for the doctor and day
+                var appointments = await _dbContext.PatientAppointments
+                    .Where(a => a.DoctorId == doctorId && a.AppointmentDate.Date == date.Date && (a.Status == AppointmentStatus.Scheduled || a.Status == AppointmentStatus.Rescheduled))
+                    .ToListAsync();
+
+                var slots = new List<AppointmentSlot>();
+
+                foreach (var availability in availabilities)
+                {
+                    var slotStartTime = availability.FromTime;
+                    while (slotStartTime + availability.AppointmentLength <= availability.ToTime)
+                    {
+                        var slotEndTime = slotStartTime + availability.AppointmentLength;
+
+                        // Check if the slot is already booked
+                        if (!appointments.Any(a => a.FromTime == slotStartTime && a.ToTime == slotEndTime))
+                        {
+                            slots.Add(new AppointmentSlot
+                            {
+                                FromTime = slotStartTime,
+                                ToTime = slotEndTime,
+                                Date = date
+                            });
+                        }
+
+                        slotStartTime = slotEndTime;
+                    }
+                }
+
+                return new Result<List<AppointmentSlot>>(slots);
+            }
+            catch (ValidationException ex)
+            {
+                return new Result<List<AppointmentSlot>>(ApiErrorCode.ValidationError.ToString(), ex.Message);
+            }
+            catch (NotFoundException ex)
+            {
+                return new Result<List<AppointmentSlot>>(ApiErrorCode.NotFound.ToString(), ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<AppointmentSlot>>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while getting doctor availability slots: {ex.Message}");
+            }
         }
 
         private async Task<(Doctor? doctor, string? error)> GetDoctorIdByDoctorUserOrStaff(string userId, string staffUserId)

@@ -1,4 +1,6 @@
 ﻿using FindMyFamilyDoc.Business.Helpers;
+using FindMyFamilyDoc.Shared.Enums;
+using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
 
 namespace FindMyFamilyDoc.Business.Interfaces
@@ -9,7 +11,7 @@ namespace FindMyFamilyDoc.Business.Interfaces
         Task<Result<IEnumerable<DoctorAvailabilityViewModel>>> GetDoctorAvailabilityByStaffIdAsync(string staffId);
         Task<Result<dynamic>> AddAvailabilityAsync(IEnumerable<DoctorAvailabilityViewModel> newAvailabilities);
         Task<Result<dynamic>> UpdateAvailabilityAsync(IEnumerable<DoctorAvailabilityViewModel> updatedAvailabilities);
-
+        Task<Result<List<AppointmentSlot>>> GetDoctorAvailabilitySlots(string doctorId, DateTime date);
         //Task<Result<bool>> DeleteAvailabilityAsync(int doctorId);
     }
 }

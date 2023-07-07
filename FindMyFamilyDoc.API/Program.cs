@@ -38,6 +38,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IDoctorStaffService, DoctorStaffService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDoctorAvailabilityService, DoctorAvailabilityService>();
+builder.Services.AddScoped<IPatientAppointmentService, PatientAppointmentService>();
 
 builder.Services.AddScoped<ApiKeyAuthFilter>();
 

@@ -23,6 +23,11 @@ namespace FindMyFamilyDoc.Shared.Models
         [Required]
         public AppointmentStatus Status { get; set; }
 
+        public string? StatusMessage { get; set; }
+
+        [Required]
+        public DateTime AppointmentDate { get; set; }
+
         public Doctor Doctor { get; set; } = default!;
         public Patient Patient { get; set; } = default!;
     }
