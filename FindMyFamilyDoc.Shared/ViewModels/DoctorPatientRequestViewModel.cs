@@ -1,5 +1,4 @@
-﻿using FindMyFamilyDoc.Shared.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Shared.ViewModels
 {
@@ -25,5 +24,14 @@ namespace FindMyFamilyDoc.Shared.ViewModels
 
         [Required]
         public string ResultMessage { get; set; } = default!;
+    }
+
+    public class DeleteRequestViewModel
+    {
+        [Required]
+        public int RequestId { get; set; }
+
+        [Required]
+        public string PatientId { get; set; } = default!;
     }
 }

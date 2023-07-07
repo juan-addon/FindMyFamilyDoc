@@ -1,5 +1,6 @@
 ﻿using FindMyFamilyDoc.API.Authentication;
 using FindMyFamilyDoc.Business.Interfaces;
+using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -93,6 +94,13 @@ namespace FindMyFamilyDoc.API.Controllers
         public async Task<IActionResult> GetDoctors([FromQuery] DoctorSearchViewModel searchModel)
         {
             var result = await _doctorService.SearchDoctor(searchModel);
+            return Result(result);
+        }
+
+        [HttpGet("doctor-profile/{userId}")]
+        public async Task<IActionResult> GetDoctorProfile(string userId)
+        {
+            var result = await _doctorService.GetDoctorProfile(userId);
             return Result(result);
         }
     }

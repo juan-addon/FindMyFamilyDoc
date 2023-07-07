@@ -17,13 +17,13 @@ namespace FindMyFamilyDoc.Business
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<City> Cities { get; set; }
-		public DbSet<Doctor> Doctors { get; set; }
-		public DbSet<DoctorEducationBackground> DoctorEducationBackgrounds { get; set; }
-		public DbSet<Specialty> Specialties { get; set; }
-		public DbSet<DoctorSpecialty> DoctorSpecialties { get; set; }
-		public DbSet<DoctorExperience> Experiences { get; set; }
-		public DbSet<Language> Languages { get; set; }
-		public DbSet<DoctorLanguage> DoctorLanguages { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<DoctorEducationBackground> DoctorEducationBackgrounds { get; set; }
+        public DbSet<Specialty> Specialties { get; set; }
+        public DbSet<DoctorSpecialty> DoctorSpecialties { get; set; }
+        public DbSet<DoctorExperience> Experiences { get; set; }
+        public DbSet<Language> Languages { get; set; }
+        public DbSet<DoctorLanguage> DoctorLanguages { get; set; }
         public DbSet<DoctorStaff> DoctorStaffs { get; set; }
         public DbSet<DoctorPatientAssociation> DoctorPatientAssociations { get; set; }
 
@@ -34,6 +34,28 @@ namespace FindMyFamilyDoc.Business
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Doctor>()
+                .HasAlternateKey(d => d.UserId)
+                .HasName("AlternateKey_DoctorUserId");
+
+            modelBuilder.Entity<Patient>()
+                .HasAlternateKey(p => p.UserId)
+                .HasName("AlternateKey_PatientUserId");
+
+            modelBuilder.Entity<DoctorPatientAssociation>()
+                .HasOne(dpa => dpa.Doctor)
+                .WithMany(d => d.DoctorPatientAssociations)
+                .HasForeignKey(dpa => dpa.DoctorUserId)
+                .HasPrincipalKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.NoAction); // Disable cascade delete
+
+            modelBuilder.Entity<DoctorPatientAssociation>()
+                .HasOne(dpa => dpa.Patient)
+                .WithMany(p => p.DoctorPatientAssociations)
+                .HasForeignKey(dpa => dpa.PatientUserId)
+                .HasPrincipalKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.NoAction); // Disable cascade delete
+
             base.OnModelCreating(modelBuilder);
 
             //modelBuilder.Entity<Doctor>()
@@ -67,11 +89,11 @@ namespace FindMyFamilyDoc.Business
 
             //modelBuilder.Entity<IdentityRole>().HasData(roles);
             //ModelBuilderStateDataSeeder.Seed(modelBuilder);
-		}
+        }
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			optionsBuilder.EnableSensitiveDataLogging();
-		}
-	}
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
+    }
 }

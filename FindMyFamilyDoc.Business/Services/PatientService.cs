@@ -145,6 +145,7 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        //create the get request list for patients, allow patients to delete a request in pending status...
         public async Task<Result<dynamic>> CreatePatient(PatientViewModel model)
         {
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
@@ -201,6 +202,7 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        //create the get request list for patients, allow patients to delete a request in pending status...
         public async Task<Result<dynamic>> RequestDoctor(DoctorPatientRequestViewModel model)
         {
             try
@@ -235,6 +237,14 @@ namespace FindMyFamilyDoc.Business.Services
                     return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Patient not found.");
                 }
 
+                // Check if patient has a pending request
+                var patientPendingRequest = await _dbContext.DoctorPatientAssociations
+                    .FirstOrDefaultAsync(dpa => dpa.PatientUserId == model.PatientId && dpa.Status == AssociationStatus.Pending);
+                if (patientPendingRequest != null)
+                {
+                    return new Result<dynamic>(ApiErrorCode.RequestError.ToString(), "You already have a pending request. Please wait for the final decision before submitting another request.");
+                }
+
                 // Check if the doctor is under review
                 //to-do
                 /*var isUnderReview = await _dbContext.DoctorReviews.AnyAsync(dr => dr.DoctorUserId == model.DoctorId && dr.Status == ReviewStatus.UnderReview);
@@ -261,6 +271,62 @@ namespace FindMyFamilyDoc.Business.Services
                 return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while requesting a doctor: {ex.Message}");
             }
         }
+
+        public async Task<Result<dynamic>> DeletePendingRequestAsync(DeleteRequestViewModel model)
+        {
+            try
+            {
+                var request = await _dbContext.DoctorPatientAssociations
+                    .FirstOrDefaultAsync(dpa => dpa.Id == model.RequestId && dpa.PatientUserId == model.PatientId && dpa.Status == AssociationStatus.Pending);
+
+                if (request == null)
+                {
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Pending request not found or not owned by you.");
+                }
+
+                _dbContext.DoctorPatientAssociations.Remove(request);
+                await _dbContext.SaveChangesAsync();
+
+                return new Result<dynamic>(new { Message = "Pending request deleted." });
+            }
+            catch (Exception ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while deleting the pending request: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<dynamic>> GetRequestsForPatientAsync(string patientUserId)
+        {
+            try
+            {
+                var requests = await _dbContext.DoctorPatientAssociations
+                    .Include(m => m.Doctor)
+                    .Where(dpa => dpa.PatientUserId == patientUserId)
+                    .ToListAsync();
+
+                if (requests == null || !requests.Any())
+                {
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "No requests found.");
+                }
+
+                var requestList = requests.Select(r => new
+                {
+                    RequestId = r.Id,
+                    DoctorId = r.DoctorUserId,
+                    DoctorName = r.Doctor.Name,
+                    RequestDate = r.Timestamp,
+                    RequestStatus = r.Status.ToString(),
+                    RequestMessage = r.ResultMessage
+                });
+
+                return new Result<dynamic>(new { PatientRequests = requestList });
+            }
+            catch (Exception ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving the pending requests: {ex.Message}");
+            }
+        }
+
 
         private async Task<string> ValidatePatientCreation(PatientViewModel model)
         {

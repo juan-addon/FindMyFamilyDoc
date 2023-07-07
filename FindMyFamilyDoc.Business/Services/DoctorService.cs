@@ -316,39 +316,118 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
-        public async Task<Result<dynamic>> ProcessPatientRequest(ProcessPatientRequestViewModel model)
+        public async Task<Result<dynamic>> GetDoctorPatientListAsync(string doctorId)
+        {
+            return await GetDoctorPatientDataAsync(doctorId, AssociationStatus.Approved, "No Patients found.");
+        }
+
+        public async Task<Result<dynamic>> GetPatientRequestAsyncByDoctorId(string doctorId)
+        {
+            return await GetDoctorPatientDataAsync(doctorId, AssociationStatus.Pending, "No Request found.");
+        }
+
+        public async Task<Result<PatientDetailViewModel>> GetPatientDetail(DoctorPatientRequestViewModel model)
         {
             try
             {
-                var association = await _dbContext.DoctorPatientAssociations
-                    .FirstOrDefaultAsync(dpa => dpa.DoctorUserId == model.DoctorId && dpa.PatientUserId == model.PatientId && dpa.Status == AssociationStatus.Pending);
+                var patientAssociation = await _dbContext.DoctorPatientAssociations
+                    .FirstOrDefaultAsync(dpa => dpa.DoctorUserId == model.DoctorId && dpa.PatientUserId == model.PatientId && dpa.Status != AssociationStatus.Rejected);
+
+                if(patientAssociation == null)
+                {
+                    return new Result<PatientDetailViewModel>(ApiErrorCode.NotFound.ToString(), "Patient not found.");
+                }
+
+                var patient = await _dbContext.Patients
+                    .Include(p => p.City)
+                    .ThenInclude(c => c.State)
+                    .Where(p => p.UserId == model.PatientId)
+                    .Select(p => new PatientDetailViewModel
+                    {
+                        UserId = p.UserId,
+                        FirstName = p.FirstName,
+                        MiddleName = p.MiddleName,
+                        LastName = p.LastName,
+                        Phone = p.Phone,
+                        ContactInformation = p.ContactInformation,
+                        ProfilePicture = p.ProfilePicture,
+                        CityId = p.CityId,
+                        CityName = p.City.Name,
+                        StateId = p.City.State.Id,
+                        State = p.City.State.Name,
+                        Street = p.Street,
+                        PostalCode = p.PostalCode,
+                        DateOfBirth = p.DateOfBirth,
+                        Gender = p.Gender.ToString(),
+                        EmergencyContact = p.EmergencyContact,
+                        CurrentMedications = p.CurrentMedications,
+                        MaritalStatus = p.MaritalStatus,
+                        Occupation = p.Occupation
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (patient == null)
+                {
+                    return new Result<PatientDetailViewModel>(ApiErrorCode.NotFound.ToString(), "Patient not found.");
+                }
+
+                return new Result<PatientDetailViewModel>(patient);
+            }
+            catch (Exception ex)
+            {
+                return new Result<PatientDetailViewModel>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving the patient profile: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<dynamic>> DeleteDoctorPatient(ProcessPatientRequestViewModel model)
+        {
+            try
+            {
+                var association = await GetDoctorPatientAssociationAsync(model.DoctorId, model.PatientId, AssociationStatus.Approved);
                 if (association == null)
                 {
                     return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Request not found.");
                 }
 
-                if (!Enum.TryParse(model.Status, out AssociationStatus status))
+                if (!IsValidStatus(model.Status))
                 {
                     return new Result<dynamic>(ApiErrorCode.ValidationError.ToString(), "Invalid status value.");
                 }
 
-                association.Status = status;
-                association.Timestamp = DateTime.Now;
-                association.ResultMessage = model.ResultMessage;
+                await SaveChangesAsync(association, model, AssociationStatus.Deleted);
 
-                string message;
-                if (status == AssociationStatus.Approved)
+                return new Result<dynamic>(new { Message = "Patient Deleted." });
+            }
+            catch (Exception ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while processing a patient request: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<dynamic>> ProcessPatientRequest(ProcessPatientRequestViewModel model)
+        {
+            try
+            {
+                var association = await GetDoctorPatientAssociationAsync(model.DoctorId, model.PatientId, AssociationStatus.Pending);
+                if (association == null)
                 {
-                    message = "Patient approved.";
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Request not found.");
                 }
-                else
+
+                if (!IsValidStatus(model.Status))
+                {
+                    return new Result<dynamic>(ApiErrorCode.ValidationError.ToString(), "Invalid status value.");
+                }
+
+                var status = Enum.Parse<AssociationStatus>(model.Status);
+                var message = status == AssociationStatus.Approved ? "Patient approved." : "Patient rejected.";
+
+                if (status != AssociationStatus.Approved)
                 {
                     _dbContext.DoctorPatientAssociations.Remove(association);
-                    message = "Patient rejected.";
                 }
 
-                _dbContext.Entry(association).State = EntityState.Modified;
-                await _dbContext.SaveChangesAsync();
+                await SaveChangesAsync(association, model, status);
 
                 return new Result<dynamic>(new { Message = message });
             }
@@ -356,6 +435,27 @@ namespace FindMyFamilyDoc.Business.Services
             {
                 return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while processing a patient request: {ex.Message}");
             }
+        }
+
+        private async Task<DoctorPatientAssociation?> GetDoctorPatientAssociationAsync(string doctorId, string patientId, AssociationStatus status)
+        {
+            return await _dbContext.DoctorPatientAssociations
+                .FirstOrDefaultAsync(dpa => dpa.DoctorUserId == doctorId && dpa.PatientUserId == patientId && dpa.Status == status);
+        }
+
+        private bool IsValidStatus(string status)
+        {
+            return Enum.TryParse(status, out AssociationStatus _);
+        }
+
+        private async Task SaveChangesAsync(DoctorPatientAssociation association, ProcessPatientRequestViewModel model, AssociationStatus status)
+        {
+            association.Status = status;
+            association.Timestamp = DateTime.Now;
+            association.ResultMessage = model.ResultMessage;
+
+            _dbContext.Entry(association).State = EntityState.Modified;
+            await _dbContext.SaveChangesAsync();
         }
 
         private async Task<string> ValidateDoctor(DoctorViewModel model, bool isUpdate = false)
@@ -520,6 +620,40 @@ namespace FindMyFamilyDoc.Business.Services
             foreach (var item in newCollectionSelector(model))
             {
                 existingCollection.Add(item);
+            }
+        }
+
+        private async Task<Result<dynamic>> GetDoctorPatientDataAsync(string doctorId, AssociationStatus status, string notFoundMessage)
+        {
+            try
+            {
+                var patients = await _dbContext.DoctorPatientAssociations
+                    .Include(m => m.Patient)
+                    .ThenInclude(m => m.City)
+                    .ThenInclude(m => m.State)
+                    .Where(dpa => dpa.DoctorUserId == doctorId && dpa.Status == status)
+                    .ToListAsync();
+
+                if (patients == null || !patients.Any())
+                {
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), notFoundMessage);
+                }
+
+                var transformedPatients = patients.Select(p => new
+                {
+                    PatientId = p.Patient.UserId,
+                    PatientName = p.Patient.Name,
+                    Gender = p.Patient.Gender.ToString(),
+                    MaritalStatus = p.Patient.MaritalStatus.ToString(),
+                    Occupation = p.Patient.Occupation.ToString(),
+                    Direction = $"{p.Patient.Street} {p.Patient.City.Name} {p.Patient.City.State.Name} {p.Patient.PostalCode}"
+                });
+
+                return new Result<dynamic>(new { DoctorPatientsList = transformedPatients });
+            }
+            catch (Exception ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while processing a patient request: {ex.Message}");
             }
         }
     }

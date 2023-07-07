@@ -11,6 +11,6 @@ namespace FindMyFamilyDoc.Shared.Models
         public string Occupation { get; set; } = default!;
 
         [InverseProperty("Patient")]
-        public virtual List<DoctorPatientAssociation>? DoctorPatientAssociations { get; set; }
+        public virtual ICollection<DoctorPatientAssociation> DoctorPatientAssociations { get; set; } = new List<DoctorPatientAssociation>();
     }
 }
