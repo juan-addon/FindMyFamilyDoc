@@ -212,6 +212,45 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        public async Task<List<AppointmentSlot>> GetDoctorAvailabilitySlots(string doctorId, WeekDay dayOfWeek)
+        {
+            // Get the doctor's availability periods for the specific day
+            var availabilities = await _dbContext.DoctorAvailabilities
+                .Include(m => m.Doctor)
+                .Where(da => da.Doctor.UserId == doctorId && da.DayOfWeek == dayOfWeek && da.IsActive)
+                .ToListAsync();
+
+            // Get the appointments for the doctor and day
+            var appointments = await _dbContext.PatientAppointments
+                .Where(a => a.DoctorId == doctorId && a.DayOfWeek == dayOfWeek && (a.Status == AppointmentStatus.Scheduled || a.Status == AppointmentStatus.Rescheduled))
+                .ToListAsync();
+
+            var slots = new List<AppointmentSlot>();
+
+            foreach (var availability in availabilities)
+            {
+                var slotStartTime = availability.FromTime;
+                while (slotStartTime + availability.AppointmentLength <= availability.ToTime)
+                {
+                    var slotEndTime = slotStartTime + availability.AppointmentLength;
+
+                    // Check if the slot is already booked
+                    if (!appointments.Any(a => a.FromTime == slotStartTime && a.ToTime == slotEndTime))
+                    {
+                        slots.Add(new AppointmentSlot
+                        {
+                            FromTime = slotStartTime,
+                            ToTime = slotEndTime
+                        });
+                    }
+
+                    slotStartTime = slotEndTime;
+                }
+            }
+
+            return slots;
+        }
+
         private async Task<(Doctor? doctor, string? error)> GetDoctorIdByDoctorUserOrStaff(string userId, string staffUserId)
         {
             // Try to get doctor by userId
