@@ -1,4 +1,5 @@
 ﻿using FindMyFamilyDoc.Shared.Enums;
+using FindMyFamilyDoc.Shared.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace FindMyFamilyDoc.Shared.ViewModels
@@ -25,5 +26,12 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string CityName { get; set; } = default!;
         public int StateId { get; set; } = default!;
         public string State { get; set; } = default!;
+        public AssociatedDoctor? AssociatedDoctor { get; set; } 
+    }
+
+    public class AssociatedDoctor
+    {
+        public string DoctorUserId { get; set; } = default!;
+        public string DoctorName { get; set; } = default!;
     }
 }

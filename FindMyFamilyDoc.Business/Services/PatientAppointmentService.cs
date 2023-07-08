@@ -6,7 +6,6 @@ using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using SendGrid.Helpers.Errors.Model;
 using System.ComponentModel.DataAnnotations;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FindMyFamilyDoc.Business.Services
 {
@@ -28,11 +27,11 @@ namespace FindMyFamilyDoc.Business.Services
                 var appointment = new PatientAppointment
                 {
                     DoctorId = request.DoctorUserId,
-                    PatientId = request.PatienUsertId,
+                    PatientId = request.PatientUserId,
                     DayOfWeek = (WeekDay)Enum.Parse(typeof(WeekDay), request.AppointmentDate.DayOfWeek.ToString()),
                     FromTime = request.FromTime,
                     ToTime = request.ToTime,
-                    Status = Enum.Parse<AppointmentStatus>(request.Status),
+                    Status = AppointmentStatus.Scheduled,
                     AppointmentDate = request.AppointmentDate,
                     StatusMessage = request.Status,
                     CreatedAt = DateTime.UtcNow, // assuming the request date is the current time
@@ -45,7 +44,7 @@ namespace FindMyFamilyDoc.Business.Services
                 {
                     Id = appointment.Id,
                     DoctorUserId = appointment.DoctorId,
-                    PatienUsertId = appointment.PatientId,
+                    PatientUserId = appointment.PatientId,
                     FromTime = appointment.FromTime,
                     ToTime = appointment.ToTime,
                     Status = appointment.Status.ToString(),
@@ -84,7 +83,7 @@ namespace FindMyFamilyDoc.Business.Services
 
                 // Update appointment details
                 appointment.DoctorId = request.DoctorUserId;
-                appointment.PatientId = request.PatienUsertId;
+                appointment.PatientId = request.PatientUserId;
                 appointment.DayOfWeek = (WeekDay)Enum.Parse(typeof(WeekDay), request.AppointmentDate.DayOfWeek.ToString());
                 appointment.FromTime = request.FromTime;
                 appointment.ToTime = request.ToTime;
@@ -102,7 +101,7 @@ namespace FindMyFamilyDoc.Business.Services
                 {
                     Id = appointment.Id,
                     DoctorUserId = appointment.DoctorId,
-                    PatienUsertId = appointment.PatientId,
+                    PatientUserId = appointment.PatientId,
                     FromTime = appointment.FromTime,
                     ToTime = appointment.ToTime,
                     Status = AppointmentStatus.Rescheduled.ToString(),
@@ -179,7 +178,7 @@ namespace FindMyFamilyDoc.Business.Services
                     {
                         Id = a.Id,
                         DoctorUserId = a.DoctorId,
-                        PatienUsertId = a.PatientId,
+                        PatientUserId = a.PatientId,
                         FromTime = a.FromTime,
                         ToTime = a.ToTime,
                         Status = a.Status.ToString(),
@@ -198,24 +197,19 @@ namespace FindMyFamilyDoc.Business.Services
 
         private async Task ValidateAppointmentRequestAsync(PatientAppointmentViewModel request)
         {
-            if (!Enum.TryParse<AppointmentStatus>(request.Status, out var parsedStatus))
-            {
-                throw new ValidationException("Invalid Status value");
-            }
-
             var doctorExists = await _dbContext.Doctors.AnyAsync(d => d.UserId == request.DoctorUserId);
             if (!doctorExists)
             {
                 throw new NotFoundException("Doctor not found");
             }
 
-            var patientExists = await _dbContext.Patients.AnyAsync(p => p.UserId == request.PatienUsertId);
+            var patientExists = await _dbContext.Patients.AnyAsync(p => p.UserId == request.PatientUserId);
             if (!patientExists)
             {
                 throw new NotFoundException("Patient not found");
             }
 
-            var patientIsAssociatedWithDoctor = await _dbContext.DoctorPatientAssociations.AnyAsync(dp => dp.Doctor.UserId == request.DoctorUserId && dp.Patient.UserId == request.PatienUsertId && dp.Status == AssociationStatus.Approved);
+            var patientIsAssociatedWithDoctor = await _dbContext.DoctorPatientAssociations.AnyAsync(dp => dp.Doctor.UserId == request.DoctorUserId && dp.Patient.UserId == request.PatientUserId && dp.Status == AssociationStatus.Approved);
             if (!patientIsAssociatedWithDoctor)
             {
                 throw new ValidationException("Patient is not associated with the doctor");

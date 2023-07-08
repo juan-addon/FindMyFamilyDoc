@@ -31,6 +31,8 @@ namespace FindMyFamilyDoc.Business.Services
                 var patient = await _dbContext.Patients
                     .Include(p => p.City)
                     .ThenInclude(c => c.State)
+                    .Include(c => c.DoctorPatientAssociations)
+                    .ThenInclude(d => d.Doctor)
                     .Where(p => p.UserId == UserId)
                     .Select(p => new PatientDetailViewModel
                     {
@@ -52,7 +54,14 @@ namespace FindMyFamilyDoc.Business.Services
                         EmergencyContact = p.EmergencyContact,
                         CurrentMedications = p.CurrentMedications,
                         MaritalStatus = p.MaritalStatus,
-                        Occupation = p.Occupation
+                        Occupation = p.Occupation,
+                        AssociatedDoctor = p.DoctorPatientAssociations
+                            .Where(dpa => dpa.Status == AssociationStatus.Approved)
+                            .Select(dpa => new AssociatedDoctor
+                            {
+                                DoctorUserId = dpa.Doctor.UserId,
+                                DoctorName = dpa.Doctor.Name
+                            }).FirstOrDefault()
                     })
                     .FirstOrDefaultAsync();
 

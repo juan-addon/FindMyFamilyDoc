@@ -10,7 +10,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string DoctorUserId { get; set; } = default!;
 
         [Required]
-        public string PatienUsertId { get; set; } = default!;
+        public string PatientUserId { get; set; } = default!;
 
         [Required]
         public TimeSpan FromTime { get; set; }
@@ -18,8 +18,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         [Required]
         public TimeSpan ToTime { get; set; }
 
-        [Required]
-        public string Status { get; set; } = default!;
+        public string? Status { get; set; }
 
         [Required]
         public DateTime AppointmentDate { get; set; }
