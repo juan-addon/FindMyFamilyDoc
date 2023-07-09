@@ -16,5 +16,6 @@ namespace FindMyFamilyDoc.Business.Interfaces
         Task<Result<dynamic>> GetPatientRequestAsyncByDoctorId(string doctorId);
         Task<Result<dynamic>> GetDoctorPatientListAsync(string doctorId);
         Task<Result<PatientDetailViewModel>> GetPatientDetail(DoctorPatientRequestViewModel model);
+        Task<Result<dynamic>> DeleteDoctorPatient(ProcessPatientRequestViewModel model);
     }
 }

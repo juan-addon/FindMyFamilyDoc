@@ -99,5 +99,13 @@ namespace FindMyFamilyDoc.API.Controllers
             var result = await _doctorService.ProcessPatientRequest(model);
             return Result(result);
         }
+
+        [HttpDelete("delete-doctor-patient")]
+        [RoleAuthorize(UserRoles.Doctor)]
+        public async Task<IActionResult> DeleteDoctorPatient([FromBody] ProcessPatientRequestViewModel model)
+        {
+            var result = await _doctorService.DeleteDoctorPatient(model);
+            return Result(result);
+        }
     }
 }
