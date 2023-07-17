@@ -277,6 +277,91 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        public async Task<Result<dynamic>> DeleteAvailabilityAsync(int availabilityId)
+        {
+            try
+            {
+                // Fetch the availability to be deleted
+                var availability = await _dbContext.DoctorAvailabilities.FirstOrDefaultAsync(a => a.Id == availabilityId);
+                if (availability == null)
+                {
+                    throw new NotFoundException("Availability not found");
+                }
+
+                // Update availability status to inactive
+                availability.IsActive = false;
+
+                // Persist changes
+                _dbContext.DoctorAvailabilities.Update(availability);
+                await _dbContext.SaveChangesAsync();
+
+                return new Result<dynamic>(new { 
+                    Availability = availability,
+                    Message = "Availability successfully deleted"
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while deleting the availability: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<dynamic>> DeleteAvailabilityAndPatientAppointmentsAsync(AvailabilityCancellationViewModel request)
+        {
+            try
+            {
+                // Fetch the availability to be deleted
+                var availability = await _dbContext.DoctorAvailabilities
+                    .Include(m => m.Doctor)
+                    .FirstOrDefaultAsync(a => a.Id == request.AvailabilityId);
+
+                if (availability == null)
+                {
+                    throw new NotFoundException("Availability not found");
+                }
+
+                // Update availability status to inactive
+                availability.IsActive = false;
+
+                // Fetch appointments that fall within this availability
+                var appointments = await _dbContext.PatientAppointments
+                    .Where(a => a.DoctorId == availability.Doctor.UserId &&
+                        (a.Status == AppointmentStatus.Scheduled || a.Status == AppointmentStatus.Rescheduled))
+                    .ToListAsync();
+
+                // Update appointment status to Cancelled for each appointment
+                foreach (var appointment in appointments)
+                {
+                    appointment.Status = AppointmentStatus.Cancelled;
+                    appointment.StatusMessage = request.CancellationMessage;
+                    appointment.UpdateAt = DateTime.UtcNow;
+                    _dbContext.PatientAppointments.Update(appointment);
+                }
+
+                // Persist changes
+                _dbContext.DoctorAvailabilities.Update(availability);
+                await _dbContext.SaveChangesAsync();
+
+                return new Result<dynamic>(new
+                {
+                    Availability = availability,
+                    Message = "Availability and associated appointments successfully cancelled"
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while cancelling the availability and associated appointments: {ex.Message}");
+            }
+        }
+
         private async Task<(Doctor? doctor, string? error)> GetDoctorIdByDoctorUserOrStaff(string userId, string staffUserId)
         {
             // Try to get doctor by userId

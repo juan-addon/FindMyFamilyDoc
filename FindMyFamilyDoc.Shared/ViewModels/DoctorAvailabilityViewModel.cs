@@ -24,4 +24,18 @@ namespace FindMyFamilyDoc.Shared.ViewModels
 
         public bool IsActive { get; set; } = true;
     }
+
+    public class AvailabilityDeleteViewModel
+    {
+        [Required]
+        public int AvailabilityId { get; set; }
+    }
+
+    public class AvailabilityCancellationViewModel : AvailabilityDeleteViewModel
+    {
+
+        [Required]
+        public string CancellationMessage { get; set; } = "";
+    }
+
 }

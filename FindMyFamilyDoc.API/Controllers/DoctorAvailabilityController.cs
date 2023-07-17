@@ -41,5 +41,21 @@ namespace FindMyFamilyDoc.API.Controllers
             var result = await _doctorAvailabilityService.UpdateAvailabilityAsync(models);
             return Result(result);
         }
+
+        [HttpDelete("delete-availability")]
+        [RoleAuthorize(UserRoles.Doctor, UserRoles.AdministrativeAssistant)]
+        public async Task<IActionResult> DeleteAvailabilityAsync([FromBody] AvailabilityDeleteViewModel model)
+        {
+            var result = await _doctorAvailabilityService.DeleteAvailabilityAsync(model.AvailabilityId);
+            return Result(result);
+        }
+
+        [HttpDelete("delete-availability-and-appointments")]
+        [RoleAuthorize(UserRoles.Doctor)]
+        public async Task<IActionResult> DeleteAvailabilityAndPatientAppointmentsAsync([FromBody] AvailabilityCancellationViewModel model)
+        {
+            var result = await _doctorAvailabilityService.DeleteAvailabilityAndPatientAppointmentsAsync(model);
+            return Result(result);
+        }
     }
 }
