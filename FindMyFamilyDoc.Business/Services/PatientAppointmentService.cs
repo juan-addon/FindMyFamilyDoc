@@ -126,7 +126,7 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
-        public async Task<Result<dynamic>> CancelPatientAppointmentAsync(AppointmentCancellationViewModel request)
+        public async Task<Result<string>> CancelPatientAppointmentAsync(AppointmentCancellationViewModel request)
         {
             try
             {
@@ -152,19 +152,19 @@ namespace FindMyFamilyDoc.Business.Services
                 _dbContext.PatientAppointments.Update(appointment);
                 await _dbContext.SaveChangesAsync();
 
-                return new Result<dynamic>("Appointment successfully cancelled");
+                return new Result<string>("Appointment successfully cancelled");
             }
             catch (ValidationException ex)
             {
-                return new Result<dynamic>(ApiErrorCode.ValidationError.ToString(), ex.Message);
+                return new Result<string>(ApiErrorCode.ValidationError.ToString(), ex.Message);
             }
             catch (NotFoundException ex)
             {
-                return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), ex.Message);
+                return new Result<string>(ApiErrorCode.NotFound.ToString(), ex.Message);
             }
             catch (Exception ex)
             {
-                return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while cancelling the appointment: {ex.Message}");
+                return new Result<string>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while cancelling the appointment: {ex.Message}");
             }
         }
 

@@ -8,7 +8,7 @@ namespace FindMyFamilyDoc.Business.Interfaces
     {
         Task<Result<PatientAppointmentViewModel>> CreatePatientAppointmentAsync(PatientAppointmentViewModel request);
         Task<Result<PatientAppointmentViewModel>> UpdatePatientAppointmentAsync(PatientAppointmentViewModel request);
-        Task<Result<dynamic>> CancelPatientAppointmentAsync(AppointmentCancellationViewModel request);
+        Task<Result<string>> CancelPatientAppointmentAsync(AppointmentCancellationViewModel request);
         Task<Result<List<PatientAppointmentViewModel>>> GetAppointmentsAsync(string userId, UserRoles userRole);
     }
 }

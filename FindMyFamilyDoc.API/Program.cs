@@ -59,7 +59,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "v1",
         Title = "Find My Family Doc",
-        Description = "Capstone 2023, FindMyFamilyDoc Application (Sprint 2)."
+        Description = "Capstone 2023, FindMyFamilyDoc Application (Sprint 3)."
     });
 });
 JwtAuthenticationHelper.ConfigureJwtAuthentication(builder.Services, builder.Configuration);
