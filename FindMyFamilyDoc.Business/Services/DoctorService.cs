@@ -636,7 +636,7 @@ namespace FindMyFamilyDoc.Business.Services
 
                 if (patients == null || !patients.Any())
                 {
-                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), notFoundMessage);
+                    return new Result<dynamic>(new { DoctorPatientsList = patients, Message = notFoundMessage });
                 }
 
                 var transformedPatients = patients.Select(p => new
@@ -649,7 +649,7 @@ namespace FindMyFamilyDoc.Business.Services
                     Direction = $"{p.Patient.Street} {p.Patient.City.Name} {p.Patient.City.State.Name} {p.Patient.PostalCode}"
                 });
 
-                return new Result<dynamic>(new { DoctorPatientsList = transformedPatients });
+                return new Result<dynamic>(new { DoctorPatientsList = transformedPatients, Message = "Ok" });
             }
             catch (Exception ex)
             {

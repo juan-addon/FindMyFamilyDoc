@@ -173,7 +173,7 @@ namespace FindMyFamilyDoc.Business.Services
             try
             {
                 var appointments = await _dbContext.PatientAppointments
-                    .Where(a => userRole == UserRoles.Doctor ? a.DoctorId == userId : a.PatientId == userId)
+                    .Where(a => userRole == UserRoles.Doctor ? a.DoctorId == userId : a.PatientId == userId )
                     .Select(a => new PatientAppointmentViewModel
                     {
                         Id = a.Id,

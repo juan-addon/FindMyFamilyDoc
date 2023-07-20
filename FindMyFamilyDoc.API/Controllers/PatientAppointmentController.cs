@@ -53,10 +53,10 @@ namespace FindMyFamilyDoc.API.Controllers
         }
 
         [HttpGet("get-pending-appointment-doctor/{doctorUserId}")]
-        [RoleAuthorize(UserRoles.Patient)]
+        [RoleAuthorize(UserRoles.Doctor)]
         public async Task<IActionResult> GetDoctorAppointmentsAsync(string doctorUserId)
         {
-            var result = await _patientAppointmentService.GetAppointmentsAsync(doctorUserId, UserRoles.Patient);
+            var result = await _patientAppointmentService.GetAppointmentsAsync(doctorUserId, UserRoles.Doctor);
             return Result(result);
         }
 
