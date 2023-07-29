@@ -265,6 +265,43 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        public async Task<Result<IList<PatientMedicalHistoryViewModel>>> GetPatientMedicalHistoryAsync(string patientId)
+        {
+            try
+            {
+                // Fetch medical history records
+                var medicalHistories = await _dbContext.PatientMedicalHistories
+                    .Include(m => m.Patient)
+                    .Include(m => m.Doctor)
+                    .Where(mh => mh.PatientId == patientId)
+                    .Select(mh => new PatientMedicalHistoryViewModel
+                    {
+                        CreateDate = mh.CreatedAt,
+                        PatientId = mh.PatientId,
+                        PatientName = mh.Patient.Name,
+                        DoctorId = mh.DoctorId,
+                        DoctorName = mh.Doctor.Name,
+                        Condition = mh.Condition,
+                        Treatment = mh.Treatment,
+                        DateOfTreatment = mh.DateOfTreatment,
+                        Notes = mh.Notes
+                    })
+                    .OrderByDescending(mh => mh.CreateDate)
+                    .ToListAsync();
+
+                if (medicalHistories == null)
+                {
+                    return new Result<IList<PatientMedicalHistoryViewModel>>(new List<PatientMedicalHistoryViewModel>());
+                }
+
+                return new Result<IList<PatientMedicalHistoryViewModel>>(medicalHistories);
+            }
+            catch (Exception ex)
+            {
+                return new Result<IList<PatientMedicalHistoryViewModel>>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while fetching the medical history: {ex.Message}");
+            }
+        }
+
         private async Task ValidateAppointmentRequestAsync(PatientAppointmentViewModel request)
         {
             var doctorExists = await _dbContext.Doctors.AnyAsync(d => d.UserId == request.DoctorUserId);

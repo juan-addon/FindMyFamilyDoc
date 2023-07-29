@@ -75,5 +75,13 @@ namespace FindMyFamilyDoc.API.Controllers
             var result = await _patientAppointmentService.CompletePatientAppointmentAsync(model);
             return Result(result);
         }
+
+        [HttpGet("get-patient-medical-history/{patientId}")]
+        [RoleAuthorize(UserRoles.Doctor, UserRoles.Patient)]
+        public async Task<IActionResult> GetPatientMedicalHistoryAsync(string patientId)
+        {
+            var result = await _patientAppointmentService.GetPatientMedicalHistoryAsync(patientId);
+            return Result(result);
+        }
     }
 }
