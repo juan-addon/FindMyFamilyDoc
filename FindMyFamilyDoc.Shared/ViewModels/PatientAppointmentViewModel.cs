@@ -40,4 +40,26 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         [Required]
         public string PatientUserId { get; set; } = default!;
     }
+
+    public class AppointmentCompletionViewModel
+    {
+        [Required]
+        public int AppointmentId { get; set; }
+        [Required]
+        public string DoctorUserId { get; set; } = default!;
+        [Required]
+        public MedicalHistoryViewModel MedicalHistory { get; set; } = new MedicalHistoryViewModel();
+    }
+
+    public class MedicalHistoryViewModel
+    {
+        [Required]
+        public string Condition { get; set; } = default!;
+
+        public string? Treatment { get; set; }
+
+        public DateTime? DateOfTreatment { get; set; }
+
+        public string? Notes { get; set; }
+    }
 }

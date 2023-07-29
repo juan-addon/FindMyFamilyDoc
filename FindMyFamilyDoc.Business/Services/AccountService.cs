@@ -4,6 +4,7 @@ using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.Models;
 using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Web;
 
@@ -151,6 +152,13 @@ namespace FindMyFamilyDoc.Business.Services
                 return (SignInResult.NotAllowed, null);
             }
 
+            string doctorRejectionMessage = "";
+            if (role == "DoctorRejected")
+            {
+                doctorRejectionMessage = _dbContext.DoctorRejections
+                    .Include(m => m.Doctor).FirstOrDefault(m => m.Doctor.UserId == user.Id)?.Reason ?? string.Empty;
+            }
+
             // Generate JWT token
             var token = JwtAuthenticationHelper.GenerateJwtToken(user, role, _configuration);
             var userRefreshToken = await _userRefreshTokenService.CreateRefreshTokenAsync(user.Id);
@@ -163,7 +171,8 @@ namespace FindMyFamilyDoc.Business.Services
                 Role = role,
 				UserRefreshToken = userRefreshToken,
                 IsPasswordChangeRequired = user.IsPasswordChangeRequired,
-                IsProfileComplete = user.IsProfileComplete
+                IsProfileComplete = user.IsProfileComplete,
+                DoctorRejectionReason = doctorRejectionMessage
             });
         }
 

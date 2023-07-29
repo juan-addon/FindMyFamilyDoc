@@ -195,6 +195,76 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        public async Task<Result<string>> CompletePatientAppointmentAsync(AppointmentCompletionViewModel request)
+        {
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Fetch the appointment to be completed
+                    var appointment = await _dbContext.PatientAppointments.FirstOrDefaultAsync(a => a.Id == request.AppointmentId);
+                    if (appointment == null)
+                    {
+                        throw new NotFoundException("Appointment not found");
+                    }
+
+                    // Validate appointment status
+                    if (appointment.Status != AppointmentStatus.Scheduled && appointment.Status != AppointmentStatus.Rescheduled)
+                    {
+                        throw new ValidationException("The appointment status must be either Scheduled or Rescheduled to complete");
+                    }
+
+                    // Verify the doctor is correct
+                    if (appointment.DoctorId != request.DoctorUserId)
+                    {
+                        throw new ValidationException("The provided DoctorId does not match the appointment");
+                    }
+
+                    // Update appointment status to Completed
+                    appointment.Status = AppointmentStatus.Completed;
+                    appointment.StatusMessage = AppointmentStatus.Completed.ToString();
+                    appointment.UpdateAt = DateTime.UtcNow;
+
+                    // Persist changes
+                    _dbContext.PatientAppointments.Update(appointment);
+
+                    // Add a new record to the patient's medical history
+                    var medicalHistory = new MedicalHistory
+                    {
+                        Condition = request.MedicalHistory.Condition,
+                        Treatment = request.MedicalHistory.Treatment,
+                        DateOfTreatment = request.MedicalHistory.DateOfTreatment,
+                        Notes = request.MedicalHistory.Notes ?? string.Empty,
+                        PatientId = appointment.PatientId,
+                        DoctorId = appointment.DoctorId
+                    };
+
+                    await _dbContext.PatientMedicalHistories.AddAsync(medicalHistory);
+                    await _dbContext.SaveChangesAsync();
+
+                    // All operations were successful, so commit the transaction.
+                    await transaction.CommitAsync();
+
+                    return new Result<string>("Appointment successfully completed and medical history updated");
+                }
+                catch (ValidationException ex)
+                {
+                    await transaction.RollbackAsync();
+                    return new Result<string>(ApiErrorCode.ValidationError.ToString(), ex.Message);
+                }
+                catch (NotFoundException ex)
+                {
+                    await transaction.RollbackAsync();
+                    return new Result<string>(ApiErrorCode.NotFound.ToString(), ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return new Result<string>(ApiErrorCode.InternalServerError.ToString(), $"An unexpected error occurred while completing the appointment: {ex.Message}");
+                }
+            }
+        }
+
         private async Task ValidateAppointmentRequestAsync(PatientAppointmentViewModel request)
         {
             var doctorExists = await _dbContext.Doctors.AnyAsync(d => d.UserId == request.DoctorUserId);

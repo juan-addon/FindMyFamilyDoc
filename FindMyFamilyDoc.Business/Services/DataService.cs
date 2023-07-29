@@ -23,7 +23,7 @@ namespace FindMyFamilyDoc.Business.Services
             try
             {
                 var roles = await _roleManager.Roles
-                    .Where(r => r.Name != UserRoles.DoctorUnderReview.ToString())
+                    .Where(r => r.Name != UserRoles.DoctorUnderReview.ToString() && r.Name != UserRoles.DoctorRejected.ToString())
                     .Select(r => new
                     {
                         RoleName = r.Name,

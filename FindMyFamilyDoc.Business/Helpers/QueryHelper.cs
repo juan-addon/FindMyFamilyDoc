@@ -16,5 +16,17 @@ namespace FindMyFamilyDoc.Business.Helpers
 
             return await Task.FromResult(query);
         }
+
+        public static async Task<IQueryable<Doctor>> GetRejectedDoctorsQuery(DatabaseContext dbContext)
+        {
+            var query = from d in dbContext.Doctors
+                        join u in dbContext.Users on d.UserId equals u.Id
+                        join ur in dbContext.UserRoles on u.Id equals ur.UserId
+                        join r in dbContext.Roles on ur.RoleId equals r.Id
+                        where r.Name == "DoctorRejected"
+                        select d;
+
+            return await Task.FromResult(query);
+        }
     }
 }

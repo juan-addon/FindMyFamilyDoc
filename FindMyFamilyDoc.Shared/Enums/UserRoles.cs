@@ -18,7 +18,10 @@ namespace FindMyFamilyDoc.Shared.Enums
         Patient,
 
         [Description("Administrative Assistant")]
-        AdministrativeAssistant 
+        AdministrativeAssistant,
+
+        [Description("Doctor Rejected")]
+        DoctorRejected,
     }
 
     /*public class RoleAuthorizeAttribute : AuthorizeAttribute

@@ -11,6 +11,7 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string UserRefreshToken { get; set; } = default!;
         public bool IsPasswordChangeRequired { get; set; } = false;
         public bool IsProfileComplete { get; set; } = false;
+        public string? DoctorRejectionReason { get; set; }
     }
 
     public class RefreshTokenViewModel

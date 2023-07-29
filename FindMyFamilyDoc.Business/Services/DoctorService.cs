@@ -61,6 +61,36 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
+        public async Task<Result<IEnumerable<DoctorsUnderReviewViewModel>>> GetRejectedDoctors()
+        {
+            try
+            {
+                var queryable = await QueryHelper.GetRejectedDoctorsQuery(_dbContext);
+                var doctorsUnderReview = await queryable
+                     .Select(d => new DoctorsUnderReviewViewModel
+                     {
+                         DoctorId = d.Id,
+                         DoctorUserId = d.UserId,
+                         DoctorName = d.Name,
+                         IsAcceptingNewPatients = d.IsAcceptingNewPatients,
+                         Phone = d.Phone,
+                         Title = d.Title,
+                         Fees = d.Fees,
+                         State = d.City.State.Name,
+                         City = d.City.Name,
+                         Address = d.Street,
+                         PostalCode = d.PostalCode
+                     })
+                     .ToListAsync();
+
+                return new Result<IEnumerable<DoctorsUnderReviewViewModel>>(doctorsUnderReview);
+            }
+            catch (Exception ex)
+            {
+                return new Result<IEnumerable<DoctorsUnderReviewViewModel>>(ApiErrorCode.InternalServerError.ToString(), $"An error occurred while retrieving doctors: {ex.Message}");
+            }
+        }
+
         public async Task<Result<DoctorDetailViewModel>> GetDoctorUnderReviewByUserId(string DoctorUserId)
         {
             try

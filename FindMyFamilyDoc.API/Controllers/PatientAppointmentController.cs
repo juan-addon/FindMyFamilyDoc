@@ -67,5 +67,13 @@ namespace FindMyFamilyDoc.API.Controllers
             var result = await _doctorAvailabilityService.GetDoctorAvailabilitySlots(doctorUserId, appoitmentDate);
             return Result(result);
         }
+
+        [HttpPut("complete-appointment")]
+        [RoleAuthorize(UserRoles.Doctor)]  // Assuming only doctors can complete the appointment
+        public async Task<IActionResult> CompletePatientAppointmentAsync([FromBody] AppointmentCompletionViewModel model)
+        {
+            var result = await _patientAppointmentService.CompletePatientAppointmentAsync(model);
+            return Result(result);
+        }
     }
 }

@@ -2,6 +2,7 @@
 using FindMyFamilyDoc.Business.Interfaces;
 using FindMyFamilyDoc.Shared.Enums;
 using FindMyFamilyDoc.Shared.Models;
+using FindMyFamilyDoc.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Transactions;
@@ -76,20 +77,20 @@ namespace FindMyFamilyDoc.Business.Services
             }
         }
 
-        public async Task<Result<dynamic>> RejectDoctor(string userId)
+        public async Task<Result<dynamic>> RejectDoctor(DoctorRejectionViewModel model)
         {
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             try
             {
                 var queryable = await QueryHelper.GetDoctorsUnderReviewQueryAsync(_dbContext);
-                var doctor = await queryable.FirstOrDefaultAsync(m => m.UserId == userId);
+                var doctor = await queryable.FirstOrDefaultAsync(m => m.UserId == model.UserId);
 
                 if (doctor == null)
                     return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Doctor not found.");
 
                 var user = await _userManager.FindByIdAsync(doctor.UserId.ToString());
                 if (user == null)
-                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "User not found.");
+                    return new Result<dynamic>(ApiErrorCode.NotFound.ToString(), "Doctor User Id not found.");
 
                 var oldRoles = await _userManager.GetRolesAsync(user);
                 var removeResult = await _userManager.RemoveFromRolesAsync(user, oldRoles);
@@ -99,8 +100,19 @@ namespace FindMyFamilyDoc.Business.Services
                     return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"Failed to remove old roles: {errorMessage}");
                 }
 
-                //doctor.IsRejected = true;
+                var result = await _userManager.AddToRoleAsync(user, "DoctorRejected");
+                if (!result.Succeeded)
+                {
+                    var errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
+                    return new Result<dynamic>(ApiErrorCode.InternalServerError.ToString(), $"Failed to update user role: {errorMessage}");
+                }
+
                 _dbContext.Doctors.Update(doctor);
+                await _dbContext.SaveChangesAsync();
+
+                // Create a new rejection record and add it to the database
+                var rejection = new DoctorRejection { DoctorId = doctor.Id, Reason = model.RejectionReason };
+                _dbContext.DoctorRejections.Add(rejection);
                 await _dbContext.SaveChangesAsync();
 
                 transactionScope.Complete();

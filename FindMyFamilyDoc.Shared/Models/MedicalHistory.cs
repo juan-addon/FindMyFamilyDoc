@@ -10,18 +10,21 @@ namespace FindMyFamilyDoc.Shared.Models
 
         public string? Treatment { get; set; }
 
-
         public DateTime? DateOfTreatment { get; set; }
 
-        [Required]
-        public string Notes { get; set; } = default!;
+        public string? Notes { get; set; } = default!;
 
-        // Foreign key
+        // Foreign keys
         [ForeignKey("PatientMedicalHistory")]
         [Required]
-        public string PatientId { get; set; }
+        public string PatientId { get; set; } = default!;
 
-        // Navigation property
-        public Patient Patient { get; set; }
+        [ForeignKey("Doctor")]
+        [Required]
+        public string DoctorId { get; set; } = default!;
+
+        // Navigation properties
+        public Patient Patient { get; set; } = default!;
+        public Doctor Doctor { get; set; } = default!;
     }
 }

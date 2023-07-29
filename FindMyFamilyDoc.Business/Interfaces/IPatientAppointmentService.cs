@@ -10,5 +10,6 @@ namespace FindMyFamilyDoc.Business.Interfaces
         Task<Result<PatientAppointmentViewModel>> UpdatePatientAppointmentAsync(PatientAppointmentViewModel request);
         Task<Result<string>> CancelPatientAppointmentAsync(AppointmentCancellationViewModel request);
         Task<Result<List<PatientAppointmentViewModel>>> GetAppointmentsAsync(string userId, UserRoles userRole);
+        Task<Result<string>> CompletePatientAppointmentAsync(AppointmentCompletionViewModel request);
     }
 }

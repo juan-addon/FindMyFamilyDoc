@@ -28,10 +28,24 @@ namespace FindMyFamilyDoc.API.Controllers
             return Result(result);
         }
 
+        [HttpPost("reject-doctor")]
+        public async Task<IActionResult> RejectDoctor(DoctorRejectionViewModel model)
+        {
+            var result = await _adminService.RejectDoctor(model);
+            return Result(result);
+        }
+
         [HttpGet("pending-doctors")]
         public async Task<IActionResult> GetPendingDoctors()
         {
             var result = await _doctorService.GetDoctorsUnderReview();
+            return Result(result);
+        }
+
+        [HttpGet("rejected-doctors")]
+        public async Task<IActionResult> GetRejectedDoctors()
+        {
+            var result = await _doctorService.GetRejectedDoctors();
             return Result(result);
         }
 

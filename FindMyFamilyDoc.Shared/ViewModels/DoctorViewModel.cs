@@ -68,4 +68,13 @@ namespace FindMyFamilyDoc.Shared.ViewModels
         public string Address { get; set; } = default!;
         public string PostalCode { get; set; } = default!;
     }
+
+    public class DoctorRejectionViewModel
+    {
+        [Required]
+        public string UserId { get; set; } = default!;
+
+        [Required]
+        public string RejectionReason { get; set; } = default!;
+    }
 }

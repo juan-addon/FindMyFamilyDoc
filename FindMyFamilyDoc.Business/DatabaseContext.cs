@@ -26,7 +26,7 @@ namespace FindMyFamilyDoc.Business
         public DbSet<MedicalHistory> PatientMedicalHistories { get; set; }
         public DbSet<DoctorAvailability> DoctorAvailabilities { get; set; }
         public DbSet<PatientAppointment> PatientAppointments { get; set; }
-
+        public DbSet<DoctorRejection> DoctorRejections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
