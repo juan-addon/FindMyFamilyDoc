@@ -15,5 +15,8 @@ namespace FindMyFamilyDoc.Shared.Models
         
         [InverseProperty("Patient")]
         public virtual ICollection<PatientAppointment> PatientAppointments { get; set; } = new List<PatientAppointment>();
+
+        [InverseProperty("Patient")]
+        public virtual ICollection<MedicalHistory> MedicalHistories { get; set; } = new List<MedicalHistory>();
     }
 }

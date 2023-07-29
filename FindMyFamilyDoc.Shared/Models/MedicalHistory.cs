@@ -14,12 +14,9 @@ namespace FindMyFamilyDoc.Shared.Models
 
         public string? Notes { get; set; } = default!;
 
-        // Foreign keys
-        [ForeignKey("PatientMedicalHistory")]
         [Required]
         public string PatientId { get; set; } = default!;
 
-        [ForeignKey("Doctor")]
         [Required]
         public string DoctorId { get; set; } = default!;
 

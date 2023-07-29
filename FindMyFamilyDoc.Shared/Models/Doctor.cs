@@ -48,5 +48,9 @@ namespace FindMyFamilyDoc.Shared.Models
 
         // One-to-Many relationship with DoctorRejection
         public virtual ICollection<DoctorRejection> DoctorRejections { get; set; } = new List<DoctorRejection>();
+
+        // One-to-Many relationship with MedicalHistory
+        [InverseProperty("Doctor")]
+        public virtual ICollection<MedicalHistory> MedicalHistories { get; set; } = new List<MedicalHistory>();
     }
 }

@@ -66,6 +66,20 @@ namespace FindMyFamilyDoc.Business
                 .HasPrincipalKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.NoAction); // Disable cascade delete
 
+            modelBuilder.Entity<MedicalHistory>()
+                .HasOne(dpa => dpa.Patient)
+                .WithMany(p => p.MedicalHistories)
+                .HasForeignKey(dpa => dpa.PatientId)
+                .HasPrincipalKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.NoAction); // Disable cascade delete
+
+            modelBuilder.Entity<MedicalHistory>()
+                .HasOne(dpa => dpa.Doctor)
+                .WithMany(d => d.MedicalHistories)
+                .HasForeignKey(dpa => dpa.DoctorId)
+                .HasPrincipalKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.NoAction); // Disable cascade delete
+
             base.OnModelCreating(modelBuilder);
 
             //modelBuilder.Entity<Doctor>()
