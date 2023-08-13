@@ -306,21 +306,13 @@ namespace FindMyFamilyDoc.Business.Services
                     query = query.Where(d => d.DoctorLanguages.Any(dl => searchModel.Languages.Contains(dl.Language.Name)));
                 }
 
-                /*
-                    if (searchModel.Gender != null)
-                    {
-                        query = query.Where(d => d.Gender == searchModel.Gender);
-                    }
-                */
+				if (!string.IsNullOrEmpty(searchModel.PostalCode) && searchModel.PostalCode.Length >= 1)
+				{
+					var postalCodeStart = searchModel.PostalCode.Substring(0, 1);
+					query = query.Where(d => d.PostalCode.StartsWith(postalCodeStart));
+				}
 
-                /*
-                    if (!string.IsNullOrEmpty(searchModel.PostalCode))
-                    {
-                        // Placeholder for postal code filtering logic
-                    }
-                */
-
-                if (searchModel.Cities != null && searchModel.Cities.Any())
+				if (searchModel.Cities != null && searchModel.Cities.Any())
                 {
                     query = query.Where(d => searchModel.Cities.Contains(d.City.Name));
                 }
